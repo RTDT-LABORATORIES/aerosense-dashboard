@@ -14,15 +14,15 @@ ENV HISTFILE="/workspaces/aerosense-dashboard/.devcontainer/.zsh_history"
 
 # Switch to vscode user
 USER vscode
+WORKDIR /workspaces/aerosense-dashboard
 
 # Install poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ENV PATH "/home/vscode/.poetry/bin:$PATH"
 RUN poetry config virtualenvs.create false
 
-# Install python dependencies
-# COPY pyproject.toml poetry.lock ./
-# RUN poetry install
-
-# Ensure pre-commit is activated
-# RUN pre-commit install && pre-commit install -t commit-msg
+# Install python dependencies. Note that poetry installs any root packages by default,
+# But this is not available at this stage of caching dependencies. So we do a dependency-only install here
+# to cache the dependencies, then a full poetry install post-create to install any root packages.
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --extras docs --no-ansi --no-interaction --no-root
