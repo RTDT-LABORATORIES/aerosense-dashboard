@@ -71,5 +71,8 @@
   "postCreateCommand": "poetry install && pre-commit install && pre-commit install -t commit-msg",
 
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+
+  //  Until the following issue is fixed, make sure you import the .env file. This will fail catastrophically without one
+  "runArgs": ["--env-file", ".env"]
 }

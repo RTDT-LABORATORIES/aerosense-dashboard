@@ -19,7 +19,7 @@ classifiers = [
 ]
 repository = "https://github.com/aerosense-ai/aerosense-dashboard"
 keywords = ["aerosense", "dashboard"]
-packages = [{ include = "aerosense_dashboard" },]
+packages = [{ include = "board" },]
 
 
 [tool.poetry.dependencies]
@@ -29,6 +29,12 @@ sphinx-rtd-theme = {version = "1.0.0", optional = true}
 sphinx-tabs = {version = "3.2.0", optional = true}
 sphinx-charts = {version = "0.1.2", optional = true}
 sphinx-math-dollar = {version = "1.2.0", optional = true}
+panel = "^0.13.0"
+pandas = "^1.4.2"
+numpy = "^1.22.3"
+matplotlib = "^3.5.1"
+google-cloud-bigquery = {extras = ["bqstorage", "pandas"], version = "^3.0.1"}
+plotly = "^5.7.0"
 
 
 [tool.poetry.dev-dependencies]
