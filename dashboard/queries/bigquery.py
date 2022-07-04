@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from google.cloud import bigquery
 
 
@@ -15,7 +15,7 @@ bqclient = bigquery.Client()
 # AND IS_NAN(sensor_value[ORDINAL(4)]) IS FALSE
 
 
-def get_connection_statistics_agg(installation_reference, up_to=None):
+def get_connection_statistics_agg(installation_reference, start=None, finish=None, all_time=False):
     """Query for minute-wise aggregated connection statistics over a day, by default the day up to now.
 
     :param [str] installation_reference: The installation reference to query for, e.g. "ost-wt-tests"
@@ -25,18 +25,25 @@ def get_connection_statistics_agg(installation_reference, up_to=None):
     connection_statistics_agg_sql = """
     SELECT datetime, filtered_rssi,	raw_rssi, tx_power, allocated_heap_memory, installation_reference
     FROM `aerosense-twined.greta.connection_statistics_agg`
-    WHERE datetime BETWEEN DATETIME_SUB(@up_to, INTERVAL 1 DAY) AND @up_to
+    WHERE datetime BETWEEN @start AND @finish
     AND installation_reference = @installation_reference
     """
 
-    print("Getting constats_agg", up_to, installation_reference)
-    up_to = up_to if up_to is not None else datetime.now()
+    if all_time:
+        start = datetime.datetime.min
+        finish = datetime.datetime.now()
+    else:
+        finish = finish if finish else datetime.datetime.now()
+        start = start if start else finish - datetime.timedelta(days=1)
+
     query_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
-            bigquery.ScalarQueryParameter("up_to", "DATETIME", up_to),
+            bigquery.ScalarQueryParameter("start", "DATETIME", start),
+            bigquery.ScalarQueryParameter("finish", "DATETIME", finish),
         ]
     )
+
     return bqclient.query(connection_statistics_agg_sql, job_config=query_config).to_dataframe()
 
 
