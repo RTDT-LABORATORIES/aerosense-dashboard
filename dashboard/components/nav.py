@@ -5,7 +5,7 @@ def Nav():
     return html.Div(
         dcc.Tabs(
             id="nav-tabs",
-            value="about",
+            value="constats",
             children=[
                 dcc.Tab(label="About", value="about"),
                 dcc.Tab(label="Connection Stats", value="constats"),
