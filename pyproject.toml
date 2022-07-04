@@ -35,7 +35,8 @@ numpy = "^1.22.3"
 matplotlib = "^3.5.1"
 google-cloud-bigquery = {extras = ["bqstorage", "pandas"], version = "^3.0.1"}
 plotly = "^5.7.0"
-
+gunicorn = "^20.1.0"
+dash = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
@@ -46,6 +47,7 @@ pytest = "^6.2.5"
 tox = "^3.24.5"
 tox-gh-actions = "^2.9.1"
 tox-poetry = "^0.4.1"
+python-dotenv = "^0.20.0"
 
 
 [tool.poetry.extras]

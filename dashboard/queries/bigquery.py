@@ -1,5 +1,6 @@
-from google.cloud import bigquery
 from datetime import datetime
+from google.cloud import bigquery
+
 
 bqclient = bigquery.Client()
 
@@ -40,7 +41,7 @@ def get_connection_statistics_agg(installation_reference, up_to=None):
 
 
 installations_sql = """
-SELECT reference, turbine_id, blade_id, hardware_version, location
+SELECT reference, turbine_id, location
 FROM `aerosense-twined.greta.installation`
 """
 
@@ -51,7 +52,7 @@ def get_installations():
 
 
 installation_sql = """
-SELECT reference, turbine_id, blade_id, hardware_version, sensor_coordinates, location
+SELECT reference, turbine_id, sensor_coordinates, location
 FROM `aerosense-twined.greta.installation`
 WHERE installation_reference = @installation_reference
 """
