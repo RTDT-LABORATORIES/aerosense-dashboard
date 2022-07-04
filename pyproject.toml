@@ -19,7 +19,6 @@ classifiers = [
 ]
 repository = "https://github.com/aerosense-ai/aerosense-dashboard"
 keywords = ["aerosense", "dashboard"]
-packages = [{ include = "board" },]
 
 
 [tool.poetry.dependencies]
