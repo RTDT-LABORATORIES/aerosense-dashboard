@@ -1,10 +1,11 @@
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 
 from dashboard.components import InstallationSelect, Logo, Nav, Subtitle, Title
-from example.callbacks import advance_slider, make_graph, make_text
-from example.components import LearnMore, StepButtons, StepSlider
+from dashboard.components.time_range_select import TimeRangeSelect
+from dashboard.components.y_axis_select import YAxisSelect
+from dashboard.graphs import plot_connections_statistics
 
 
 # NOTES FOR MARCUS
@@ -30,10 +31,12 @@ app.layout = html.Div(
                     ]
                 ),
                 Nav(),
+                html.Label("Installation reference"),
                 InstallationSelect(),
-                LearnMore(),
-                StepSlider(),
-                StepButtons(),
+                html.Label("Y-axis to plot"),
+                YAxisSelect(),
+                html.Label("Time range"),
+                TimeRangeSelect(),
             ],
             className="four columns sidebar",
         ),
@@ -51,28 +54,14 @@ app.layout = html.Div(
 )
 
 
-@app.callback(Output("graph", "figure"), [Input("slider", "value")])
-def make_graph_callback(value):
-    return make_graph(value)
-
-
-@app.callback(Output("text", "children"), [Input("slider", "value")])
-def make_text_callback(value):
-    return make_text(value)
-
-
 @app.callback(
-    [Output("slider", "value"), Output("click-output", "data")],
-    [Input("back", "n_clicks"), Input("next", "n_clicks")],
-    [State("slider", "value"), State("click-output", "data")],
+    Output("graph", "figure"),
+    Input("installation_select", "value"),
+    Input("y_axis_select", "value"),
+    Input("time_range_select", "value"),
 )
-def advance_slider_callback(back, nxt, slider, last_history):
-    return advance_slider(back, nxt, slider, last_history)
-
-
-@app.callback(Output("output", "children"), [Input("radios", "value")])
-def display_value(value):
-    return f"Selected value: {value}"
+def plot_connections_statistics_wrapper(installation_reference, y_axis_column, time_range):
+    return plot_connections_statistics(installation_reference, y_axis_column, time_range)
 
 
 # Run the Dash app
