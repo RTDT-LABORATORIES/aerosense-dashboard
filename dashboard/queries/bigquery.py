@@ -52,7 +52,7 @@ def get_installations():
 
 
 installation_sql = """
-SELECT reference, turbine_id, sensor_coordinates, location
+SELECT reference, turbine_id, location
 FROM `aerosense-twined.greta.installation`
 WHERE installation_reference = @installation_reference
 """
