@@ -23,7 +23,7 @@ def get_connection_statistics_agg(installation_reference, start=None, finish=Non
     be delivered for the 24 hours prior.
     """
     connection_statistics_agg_sql = """
-    SELECT datetime, filtered_rssi,	raw_rssi, tx_power, allocated_heap_memory, installation_reference
+    SELECT datetime, filtered_rssi, raw_rssi, tx_power, allocated_heap_memory
     FROM `aerosense-twined.greta.connection_statistics_agg`
     WHERE datetime BETWEEN @start AND @finish
     AND installation_reference = @installation_reference
