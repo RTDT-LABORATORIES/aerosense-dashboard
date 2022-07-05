@@ -18,6 +18,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 repository = "https://github.com/aerosense-ai/aerosense-dashboard"
+packages = [{ include = "dashboard"}]
 keywords = ["aerosense", "dashboard"]
 
 
