@@ -16,7 +16,7 @@ bqclient = bigquery.Client()
 # AND IS_NAN(sensor_value[ORDINAL(4)]) IS FALSE
 
 
-def get_connection_statistics_agg(installation_reference, start=None, finish=None, all_time=False):
+def get_aggregated_connection_statistics(installation_reference, start=None, finish=None, all_time=False):
     """Query for minute-wise aggregated connection statistics over a day, by default the day up to now.
 
     :param [str] installation_reference: The installation reference to query for, e.g. "ost-wt-tests"

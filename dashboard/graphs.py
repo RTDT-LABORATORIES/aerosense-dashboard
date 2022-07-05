@@ -2,7 +2,7 @@ import datetime
 
 from plotly import express as px
 
-from dashboard.queries import get_connection_statistics_agg
+from dashboard.queries import get_aggregated_connection_statistics
 
 
 def plot_connections_statistics(installation_reference, y_axis_column, time_range):
@@ -23,6 +23,6 @@ def plot_connections_statistics(installation_reference, y_axis_column, time_rang
         finish = datetime.datetime.now()
         start = finish - time_range_options[time_range]
 
-    df = get_connection_statistics_agg(installation_reference, start=start, finish=finish, all_time=all_time)
+    df = get_aggregated_connection_statistics(installation_reference, start=start, finish=finish, all_time=all_time)
     figure = px.line(df, x="datetime", y=y_axis_column)
     return figure
