@@ -1,4 +1,5 @@
 import datetime
+
 from plotly import express as px
 
 from dashboard.queries.bigquery import get_connection_statistics_agg
