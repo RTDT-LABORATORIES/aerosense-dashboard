@@ -2,7 +2,7 @@ import datetime
 
 from plotly import express as px
 
-from dashboard.queries.bigquery import get_connection_statistics_agg
+from dashboard.queries import get_connection_statistics_agg
 
 
 def plot_connections_statistics(installation_reference, y_axis_column, time_range):
