@@ -1,6 +1,6 @@
 from dash import dcc
 
-from ..queries import BigQuery
+from dashboard.queries import BigQuery
 
 
 def InstallationSelect():
