@@ -36,3 +36,48 @@ jobs:
 
       - name: Check version
         run: check-semantic-version pyproject.toml
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Authenticate with Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0.6.0
+        with:
+          # NOTE: If setting create_credentials_file=true, .dockerignore file must include `gha-creds-*.json` to avoid baking these credentials into build
+          create_credentials_file: true
+          workload_identity_provider: "projects/885434704038/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
+          service_account: "aerosense-dashboard-deployment@aerosense-twined.iam.gserviceaccount.com"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Setup gcloud
+        uses: "google-github-actions/setup-gcloud@v0"
+
+      - name: Configure Docker for GCP
+        run: gcloud auth configure-docker europe-west6-docker.pkg.dev
+
+      - name: Build
+        id: build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: europe-west6-docker.pkg.dev/aerosense-twined/aerosense-dashboard:latest
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: aerosense-dashboard
+          image: ${{ steps.build.outputs.imageid }}
+          region: europe-west6
