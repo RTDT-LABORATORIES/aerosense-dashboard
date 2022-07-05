@@ -8,8 +8,6 @@ from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics
 
 
-# NOTES FOR MARCUS
-
 app = dash.Dash(
     __name__,
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
@@ -37,6 +35,7 @@ app.layout = html.Div(
                 YAxisSelect(),
                 html.Label("Time range"),
                 TimeRangeSelect(),
+                html.Button("Refresh current view", id="refresh-button", n_clicks=0),
             ],
             className="four columns sidebar",
         ),
@@ -59,8 +58,9 @@ app.layout = html.Div(
     Input("installation_select", "value"),
     Input("y_axis_select", "value"),
     Input("time_range_select", "value"),
+    Input("refresh-button", "n_clicks"),
 )
-def plot_connections_statistics_wrapper(installation_reference, y_axis_column, time_range):
+def plot_connections_statistics_graph(installation_reference, y_axis_column, time_range, refresh):
     return plot_connections_statistics(installation_reference, y_axis_column, time_range)
 
 
