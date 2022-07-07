@@ -34,9 +34,11 @@ class BigQuery:
         if all_time:
             start = datetime.datetime.min
             finish = datetime.datetime.now()
+
+        # Default to the last day of data.
         else:
-            finish = finish if finish else datetime.datetime.now()
-            start = start if start else finish - datetime.timedelta(days=1)
+            finish = finish or datetime.datetime.now()
+            start = start or finish - datetime.timedelta(days=1)
 
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
