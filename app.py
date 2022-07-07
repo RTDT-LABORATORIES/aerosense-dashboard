@@ -2,7 +2,7 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 
-from dashboard.components import InstallationSelect, Logo, Nav, Subtitle, Title
+from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics
@@ -16,43 +16,43 @@ app.title = "Aerosense Dashboard"
 server = app.server
 
 
-app.layout = html.Div(
+graph_section = html.Div(
     [
-        dcc.Store(id="click-output"),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        Logo(app.get_asset_url("logo.png")),
-                        Title(),
-                        Subtitle(),
-                    ]
-                ),
-                Nav(),
-                html.Label("Installation reference"),
-                html.Div([InstallationSelect()], id="installation-selection-section"),
-                html.Label("Y-axis to plot"),
-                YAxisSelect(),
-                html.Label("Time range"),
-                TimeRangeSelect(),
-                html.Br(),
-                html.Br(),
-                html.Br(),
-                html.Br(),
-                html.Br(),
-                html.Button("Get latest data", id="refresh-button", n_clicks=0),
-            ],
-            className="four columns sidebar",
-        ),
-        html.Div(
-            [
-                html.Div([dcc.Markdown(id="text")], className="text-box"),
-                dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
-            ],
-            id="page",
-            className="eight columns",
-        ),
+        html.Div([dcc.Markdown(id="text")], className="text-box"),
+        dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
     ],
+    id="page",
+    className="eight columns",
+)
+
+connection_stats_page = [
+    dcc.Store(id="click-output"),
+    html.Div(
+        [
+            html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
+            Nav(selected_tab="connection_statistics"),
+            html.Label("Installation reference"),
+            html.Div([InstallationSelect()], id="installation-selection-section"),
+            html.Label("Y-axis to plot"),
+            YAxisSelect(),
+            html.Label("Time range"),
+            TimeRangeSelect(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Button("Get latest data", id="refresh-button", n_clicks=0),
+        ],
+        className="four columns sidebar",
+    ),
+    graph_section,
+]
+
+
+app.layout = html.Div(
+    connection_stats_page,
+    id="main-page",
     className="row flex-display",
     style={"height": "100vh"},
 )
@@ -89,6 +89,20 @@ def update_installation_selector(refresh):
     :return list:
     """
     return [InstallationSelect()]
+
+
+@app.callback(
+    Output("main-page", "children"),
+    Input("nav-tabs", "value"),
+)
+def change_page(page_name):
+    """Change the page shown on the dashboard when a navigation tab is clicked.
+
+    :param str page_name:
+    :return list:
+    """
+    pages = {"sensors": None, "connection_statistics": connection_stats_page}
+    return pages[page_name]
 
 
 # Run the Dash app
