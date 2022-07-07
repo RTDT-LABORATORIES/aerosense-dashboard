@@ -30,7 +30,7 @@ app.layout = html.Div(
                 ),
                 Nav(),
                 html.Label("Installation reference"),
-                InstallationSelect(),
+                html.Div([InstallationSelect()], id="installation-selection-section"),
                 html.Label("Y-axis to plot"),
                 YAxisSelect(),
                 html.Label("Time range"),
@@ -66,7 +66,29 @@ app.layout = html.Div(
     Input("refresh-button", "n_clicks"),
 )
 def plot_connections_statistics_graph(installation_reference, y_axis_column, time_range, refresh):
+    """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
+    values are changed or the refresh button is clicked.
+
+    :param str installation_reference:
+    :param str y_axis_column:
+    :param str time_range:
+    :param int refresh:
+    :return plotly.graph_objs.Figure:
+    """
     return plot_connections_statistics(installation_reference, y_axis_column, time_range)
+
+
+@app.callback(
+    Output("installation-selection-section", "children"),
+    Input("refresh-button", "n_clicks"),
+)
+def update_installation_selector(refresh):
+    """Update the installation selector with any new installations when the refresh button is clicked.
+
+    :param int refresh:
+    :return list:
+    """
+    return [InstallationSelect()]
 
 
 # Run the Dash app
