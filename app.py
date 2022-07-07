@@ -35,7 +35,7 @@ app.layout = html.Div(
                 YAxisSelect(),
                 html.Label("Time range"),
                 TimeRangeSelect(),
-                html.Button("Refresh current view", id="refresh-button", n_clicks=0),
+                html.Button("Get latest data", id="refresh-button", n_clicks=0),
             ],
             className="four columns sidebar",
         ),
