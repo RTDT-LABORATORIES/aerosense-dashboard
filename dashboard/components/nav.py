@@ -1,13 +1,12 @@
 from dash import dcc, html
 
 
-def Nav(default_page="about"):
+def Nav(selected_tab="connection_statistics"):
     return html.Div(
         dcc.Tabs(
             id="nav-tabs",
-            value=default_page,
+            value=selected_tab,
             children=[
-                dcc.Tab(label="About", value="about"),
                 dcc.Tab(label="Connection Stats", value="connection_statistics"),
                 dcc.Tab(label="Sensors", value="sensors"),
             ],
