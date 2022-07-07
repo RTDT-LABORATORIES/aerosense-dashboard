@@ -7,6 +7,7 @@ from dashboard.queries import BigQuery
 
 def plot_connections_statistics(installation_reference, y_axis_column, time_range):
     time_range_options = {
+        "Last minute": datetime.timedelta(minutes=1),
         "Last hour": datetime.timedelta(hours=1),
         "Last day": datetime.timedelta(days=1),
         "Last week": datetime.timedelta(weeks=1),
