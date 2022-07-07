@@ -1,7 +1,7 @@
 from dash import dcc
 
 
-def Subtitle():
+def About():
     return dcc.Markdown(
         """
         A dashboard for exploring the Aerosense data lake, comprising ["greta" (a GCP BigQuery instance)]
