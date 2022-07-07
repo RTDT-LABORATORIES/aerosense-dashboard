@@ -5,11 +5,11 @@ def Nav():
     return html.Div(
         dcc.Tabs(
             id="nav-tabs",
-            value="constats",
+            value="about",
             children=[
                 dcc.Tab(label="About", value="about"),
                 dcc.Tab(label="Connection Stats", value="constats"),
-                dcc.Tab(label="Pressures", value="pressures"),
+                dcc.Tab(label="Sensors", value="sensors"),
             ],
         ),
         className="sidebar-content",
