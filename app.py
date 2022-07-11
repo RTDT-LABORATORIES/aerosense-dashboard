@@ -3,6 +3,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
+from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_sensors
@@ -61,8 +62,8 @@ sensors_page = [
             html.Div([InstallationSelect()], id="installation-selection-section"),
             html.Label("Node id"),
             dcc.Textarea(id="node-select", value="0"),
-            html.Label("Y-axis to plot"),
-            YAxisSelect(),
+            html.Label("Sensor"),
+            SensorSelect(),
             html.Label("Time range"),
             TimeRangeSelect(),
             html.Br(),

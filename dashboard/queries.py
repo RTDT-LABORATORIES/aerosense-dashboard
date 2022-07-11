@@ -122,6 +122,18 @@ class BigQuery:
 
         return self.client.query(installation_sql, job_config=query_config).to_dataframe()
 
+    def get_sensor_types(self):
+        """Get the available sensor types.
+
+        :return list:
+        """
+        query = """
+        SELECT reference
+        FROM `aerosense-twined.greta.sensor_type`
+        """
+
+        return self.client.query(query).to_dataframe()["reference"].to_list()
+
     def _get_time_period(self, start=None, finish=None, all_time=False):
         """Get the time period for the query. Defaults to the past day.
 
