@@ -44,6 +44,7 @@ class BigQuery:
         AND installation_reference = @installation_reference
         AND node_id = @node_id
         AND sensor_type_reference = @sensor_type_reference
+        LIMIT 10000
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
@@ -80,6 +81,7 @@ class BigQuery:
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
+        LIMIT 10000
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
