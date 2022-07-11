@@ -17,6 +17,49 @@ class BigQuery:
     def __init__(self):
         self.client = bigquery.Client()
 
+    def get_sensor_data(
+        self,
+        installation_reference,
+        node_id,
+        sensor_type_reference,
+        start=None,
+        finish=None,
+        all_time=False,
+    ):
+        """Get sensor data for the given sensor type on the given node of the given installation over the given time
+        period. The time period defaults to the last day.
+
+        :param str installation_reference:
+        :param str node_id:
+        :param str sensor_type_reference:
+        :param datetime.datetime|None start:
+        :param datetime.datetime|None finish:
+        :param bool all_time:
+        :return pandas.Dataframe:
+        """
+        query = """
+        SELECT datetime, sensor_value
+        FROM `aerosense-twined.greta.sensor_data`
+        WHERE datetime BETWEEN @start AND @finish
+        AND installation_reference = @installation_reference
+        AND node_id = @node_id
+        AND sensor_type_reference = @sensor_type_reference
+        """
+
+        start, finish = self._get_time_period(start, finish, all_time)
+
+        query_config = bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("start", "DATETIME", start),
+                bigquery.ScalarQueryParameter("finish", "DATETIME", finish),
+                bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
+                bigquery.ScalarQueryParameter("node_id", "STRING", node_id),
+                bigquery.ScalarQueryParameter("sensor_type_reference", "STRING", sensor_type_reference),
+            ]
+        )
+
+        return self.client.query(query, job_config=query_config).to_dataframe()
+
     def get_aggregated_connection_statistics(self, installation_reference, start=None, finish=None, all_time=False):
         """Query for minute-wise aggregated connection statistics over a day, by default the day up to now.
 
@@ -31,14 +74,7 @@ class BigQuery:
         AND installation_reference = @installation_reference
         """
 
-        if all_time:
-            start = datetime.datetime.min
-            finish = datetime.datetime.now()
-
-        # Default to the last day of data.
-        else:
-            finish = finish or datetime.datetime.now()
-            start = start or finish - datetime.timedelta(days=1)
+        start, finish = self._get_time_period(start, finish, all_time)
 
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
@@ -76,3 +112,22 @@ class BigQuery:
         )
 
         return self.client.query(installation_sql, job_config=query_config).to_dataframe()
+
+    def _get_time_period(self, start=None, finish=None, all_time=False):
+        """Get the time period for the query. Defaults to the past day.
+
+        :param datetime.datetime|None start:
+        :param datetime.datetime|None finish:
+        :param bool all_time:
+        :return (datetime.datetime, datetime.datetime):
+        """
+        if all_time:
+            start = datetime.datetime.min
+            finish = datetime.datetime.now()
+
+        # Default to the last day of data.
+        else:
+            finish = finish or datetime.datetime.now()
+            start = start or finish - datetime.timedelta(days=1)
+
+        return start, finish
