@@ -1,6 +1,6 @@
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.sensor_select import SensorSelect
@@ -89,11 +89,11 @@ app.layout = html.Div(
 
 @app.callback(
     Output("graph", "figure"),
-    Input("nav-tabs", "value"),
-    Input("installation_select", "value"),
-    Input("node-select", "value"),
-    Input("y_axis_select", "value"),
-    Input("time_range_select", "value"),
+    State("nav-tabs", "value"),
+    State("installation_select", "value"),
+    State("node-select", "value"),
+    State("y_axis_select", "value"),
+    State("time_range_select", "value"),
     Input("refresh-button", "n_clicks"),
 )
 def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_range, refresh):
