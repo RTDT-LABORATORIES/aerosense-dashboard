@@ -37,13 +37,12 @@ class BigQuery:
         :param bool all_time:
         :return pandas.Dataframe:
         """
-        query = """
+        query = f"""
         SELECT datetime, sensor_value
-        FROM `aerosense-twined.greta.sensor_data`
+        FROM `aerosense-twined.greta.sensor_data_{sensor_type_reference}`
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
-        AND sensor_type_reference = @sensor_type_reference
         LIMIT 10000
         """
 
@@ -130,11 +129,11 @@ class BigQuery:
         :return list:
         """
         query = """
-        SELECT reference
+        SELECT name
         FROM `aerosense-twined.greta.sensor_type`
         """
 
-        return self.client.query(query).to_dataframe()["reference"].to_list()
+        return self.client.query(query).to_dataframe()["name"].to_list()
 
     def _get_time_period(self, start=None, finish=None, all_time=False):
         """Get the time period for the query. Defaults to the past day.
