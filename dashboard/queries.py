@@ -3,6 +3,9 @@ import datetime
 from google.cloud import bigquery
 
 
+ROW_LIMIT = 10000
+
+
 # SCRATCH: MIGHT BE USEFUL, OTHERWISE GET RID:
 # ============================================
 # AND datetime > DATE_ADD(PARSE_DATETIME('%Y%m%d', @DS_START_DATE), INTERVAL @hour HOUR)
@@ -37,13 +40,18 @@ class BigQuery:
         :param bool all_time:
         :return pandas.Dataframe:
         """
-        query = f"""
-        SELECT datetime, sensor_value
-        FROM `aerosense-twined.greta.sensor_data_{sensor_type_reference}`
+        table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
+
+        condition = """
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
-        LIMIT 10000
+        """
+
+        query = f"""
+        SELECT COUNT(sensor_value)
+        FROM `{table_name}`
+        {condition}
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
@@ -58,7 +66,21 @@ class BigQuery:
             ]
         )
 
-        return self.client.query(query, job_config=query_config).to_dataframe()
+        number_of_rows = self.client.query(query, job_config=query_config)
+
+        try:
+            if number_of_rows > ROW_LIMIT:
+                raise ValueError("Large amount of data (%d rows) - applying a %d limit.", number_of_rows, ROW_LIMIT)
+
+        finally:
+            query = f"""
+            SELECT datetime, sensor_value
+            FROM `{table_name}`
+            {condition}
+            LIMIT 10000
+            """
+
+            return self.client.query(query, job_config=query_config).to_dataframe()
 
     def get_aggregated_connection_statistics(
         self,
@@ -80,7 +102,6 @@ class BigQuery:
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
-        LIMIT 10000
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
