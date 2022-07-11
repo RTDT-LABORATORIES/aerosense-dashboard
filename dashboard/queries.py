@@ -46,6 +46,7 @@ class BigQuery:
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
+        ORDER BY datetime
         """
 
         query = f"""
@@ -102,6 +103,7 @@ class BigQuery:
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
+        ORDER BY datetime
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
