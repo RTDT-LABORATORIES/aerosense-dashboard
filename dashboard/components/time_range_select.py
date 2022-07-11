@@ -8,5 +8,4 @@ def TimeRangeSelect():
         options=options,
         id="time_range_select",
         value="All time",
-        className="sidebar-content",
     )
