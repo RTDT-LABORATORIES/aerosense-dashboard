@@ -30,7 +30,7 @@ class BigQuery:
         period. The time period defaults to the last day.
 
         :param str installation_reference:
-        :param str node_id:
+        :param str|None node_id:
         :param str sensor_type_reference:
         :param datetime.datetime|None start:
         :param datetime.datetime|None finish:
@@ -60,7 +60,14 @@ class BigQuery:
 
         return self.client.query(query, job_config=query_config).to_dataframe()
 
-    def get_aggregated_connection_statistics(self, installation_reference, start=None, finish=None, all_time=False):
+    def get_aggregated_connection_statistics(
+        self,
+        installation_reference,
+        node_id,
+        start=None,
+        finish=None,
+        all_time=False,
+    ):
         """Query for minute-wise aggregated connection statistics over a day, by default the day up to now.
 
         :param [str] installation_reference: The installation reference to query for, e.g. "ost-wt-tests"
@@ -72,15 +79,17 @@ class BigQuery:
         FROM `aerosense-twined.greta.connection_statistics_agg`
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
+        AND node_id = @node_id
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
 
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
                 bigquery.ScalarQueryParameter("start", "DATETIME", start),
                 bigquery.ScalarQueryParameter("finish", "DATETIME", finish),
+                bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
+                bigquery.ScalarQueryParameter("node_id", "STRING", node_id),
             ]
         )
 

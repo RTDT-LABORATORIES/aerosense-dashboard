@@ -33,6 +33,8 @@ connection_stats_page = [
             Nav(selected_tab="connection_statistics"),
             html.Label("Installation reference"),
             html.Div([InstallationSelect()], id="installation-selection-section"),
+            html.Label("Node id"),
+            dcc.Textarea(id="node-select", value="0"),
             html.Label("Y-axis to plot"),
             YAxisSelect(),
             html.Label("Time range"),
@@ -104,8 +106,11 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
     :param int refresh:
     :return plotly.graph_objs.Figure:
     """
+    if not node_id:
+        node_id = None
+
     if page_name == "connection_statistics":
-        return plot_connections_statistics(installation_reference, y_axis_column, time_range)
+        return plot_connections_statistics(installation_reference, node_id, y_axis_column, time_range)
     else:
         return plot_sensors(installation_reference, node_id, y_axis_column, time_range)
 

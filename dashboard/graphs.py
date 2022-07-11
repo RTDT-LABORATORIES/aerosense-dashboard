@@ -39,11 +39,12 @@ def _generate_time_range(time_range):
     return start, finish, all_time
 
 
-def plot_connections_statistics(installation_reference, y_axis_column, time_range):
+def plot_connections_statistics(installation_reference, node_id, y_axis_column, time_range):
     start, finish, all_time = _generate_time_range(time_range)
 
     df = BigQuery().get_aggregated_connection_statistics(
         installation_reference,
+        node_id,
         start=start,
         finish=finish,
         all_time=all_time,
