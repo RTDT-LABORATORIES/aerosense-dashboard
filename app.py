@@ -78,6 +78,7 @@ sensors_page = [
                     html.Br(),
                     html.Br(),
                     html.Button("Get latest data", id="refresh-button", n_clicks=0),
+                    html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                 ],
                 className="sidebar-content",
             ),
