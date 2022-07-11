@@ -36,7 +36,7 @@ connection_stats_page = [
                 [
                     html.Label("Node id"),
                     dcc.Textarea(id="node-select", value="0"),
-                    html.Label("Y-axis to plot"),
+                    html.Label("y-axis to plot"),
                     YAxisSelect(),
                     html.Label("Time range"),
                     TimeRangeSelect(),

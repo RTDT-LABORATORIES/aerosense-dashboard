@@ -7,5 +7,5 @@ def TimeRangeSelect():
     return dcc.Dropdown(
         options=options,
         id="time_range_select",
-        value="All time",
+        value="Last day",
     )
