@@ -1,6 +1,7 @@
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
+from flask_caching import Cache
 
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.sensor_select import SensorSelect
@@ -9,11 +10,17 @@ from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_sensors
 
 
+CACHE_TIMEOUT = 3600
+
+
 app = dash.Dash(
     __name__,
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
 )
 app.title = "Aerosense Dashboard"
+
+cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
+app.config.suppress_callback_exceptions = True
 
 
 graph_section = html.Div(
@@ -106,6 +113,7 @@ app.layout = html.Div(
     State("time_range_select", "value"),
     Input("refresh-button", "n_clicks"),
 )
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_range, refresh):
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
