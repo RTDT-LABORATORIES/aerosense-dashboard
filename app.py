@@ -113,7 +113,7 @@ app.layout = html.Div(
     State("time_range_select", "value"),
     Input("refresh-button", "n_clicks"),
 )
-@cache.memoize(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
 def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_range, refresh):
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
