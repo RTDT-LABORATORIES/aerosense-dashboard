@@ -14,7 +14,6 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
 )
 app.title = "Aerosense Dashboard"
-server = app.server
 
 
 graph_section = html.Div(
@@ -47,6 +46,7 @@ connection_stats_page = [
                     html.Br(),
                     html.Br(),
                     html.Button("Get latest data", id="refresh-button", n_clicks=0),
+                    html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                 ],
                 className="sidebar-content",
             ),
@@ -127,15 +127,16 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
 
 @app.callback(
     Output("installation-selection-section", "children"),
-    Input("refresh-button", "n_clicks"),
+    Input("installation-check-button", "n_clicks"),
+    State("installation_select", "value"),
 )
-def update_installation_selector(refresh):
+def update_installation_selector(refresh, current_installation_reference):
     """Update the installation selector with any new installations when the refresh button is clicked.
 
     :param int refresh:
     :return list:
     """
-    return [InstallationSelect()]
+    return [InstallationSelect(current_installation_reference)]
 
 
 @app.callback(
