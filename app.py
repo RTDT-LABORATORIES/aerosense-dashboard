@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics
+from dashboard.graphs import plot_connections_statistics, plot_sensors
 
 
 app = dash.Dash(
@@ -57,6 +57,8 @@ sensors_page = [
             Nav(selected_tab="sensors"),
             html.Label("Installation reference"),
             html.Div([InstallationSelect()], id="installation-selection-section"),
+            html.Label("Node id"),
+            dcc.Textarea(id="node-select", value="0"),
             html.Label("Y-axis to plot"),
             YAxisSelect(),
             html.Label("Time range"),
@@ -86,11 +88,12 @@ app.layout = html.Div(
     Output("graph", "figure"),
     Input("nav-tabs", "value"),
     Input("installation_select", "value"),
+    Input("node-select", "value"),
     Input("y_axis_select", "value"),
     Input("time_range_select", "value"),
     Input("refresh-button", "n_clicks"),
 )
-def plot_graph(page_name, installation_reference, y_axis_column, time_range, refresh):
+def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_range, refresh):
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
 
@@ -104,7 +107,7 @@ def plot_graph(page_name, installation_reference, y_axis_column, time_range, ref
     if page_name == "connection_statistics":
         return plot_connections_statistics(installation_reference, y_axis_column, time_range)
     else:
-        return plot_connections_statistics(installation_reference, y_axis_column, time_range)
+        return plot_sensors(installation_reference, node_id, y_axis_column, time_range)
 
 
 @app.callback(
