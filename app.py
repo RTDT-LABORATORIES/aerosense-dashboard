@@ -49,6 +49,30 @@ connection_stats_page = [
     graph_section,
 ]
 
+sensors_page = [
+    dcc.Store(id="click-output"),
+    html.Div(
+        [
+            html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
+            Nav(selected_tab="sensors"),
+            html.Label("Installation reference"),
+            html.Div([InstallationSelect()], id="installation-selection-section"),
+            html.Label("Y-axis to plot"),
+            YAxisSelect(),
+            html.Label("Time range"),
+            TimeRangeSelect(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Button("Get latest data", id="refresh-button", n_clicks=0),
+        ],
+        className="four columns sidebar",
+    ),
+    graph_section,
+]
+
 
 app.layout = html.Div(
     connection_stats_page,
@@ -60,22 +84,27 @@ app.layout = html.Div(
 
 @app.callback(
     Output("graph", "figure"),
+    Input("nav-tabs", "value"),
     Input("installation_select", "value"),
     Input("y_axis_select", "value"),
     Input("time_range_select", "value"),
     Input("refresh-button", "n_clicks"),
 )
-def plot_connections_statistics_graph(installation_reference, y_axis_column, time_range, refresh):
+def plot_graph(page_name, installation_reference, y_axis_column, time_range, refresh):
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
 
+    :param str page_name:
     :param str installation_reference:
     :param str y_axis_column:
     :param str time_range:
     :param int refresh:
     :return plotly.graph_objs.Figure:
     """
-    return plot_connections_statistics(installation_reference, y_axis_column, time_range)
+    if page_name == "connection_statistics":
+        return plot_connections_statistics(installation_reference, y_axis_column, time_range)
+    else:
+        return plot_connections_statistics(installation_reference, y_axis_column, time_range)
 
 
 @app.callback(
@@ -101,7 +130,7 @@ def change_page(page_name):
     :param str page_name:
     :return list:
     """
-    pages = {"sensors": None, "connection_statistics": connection_stats_page}
+    pages = {"sensors": sensors_page, "connection_statistics": connection_stats_page}
     return pages[page_name]
 
 
