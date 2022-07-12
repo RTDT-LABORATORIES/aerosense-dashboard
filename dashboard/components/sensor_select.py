@@ -10,4 +10,5 @@ def SensorSelect():
         options=sensor_types,
         id="y_axis_select",
         value=sensor_types[0],
+        persistence=True,
     )
