@@ -32,7 +32,7 @@ graph_section = html.Div(
     className="eight columns",
 )
 
-connection_stats_page = [
+common_page = [
     dcc.Store(id="click-output"),
     html.Div(
         [
@@ -40,58 +40,41 @@ connection_stats_page = [
             Nav(selected_tab="connection_statistics"),
             html.Label("Installation reference", className="sidebar-content"),
             InstallationSelect(),
-            html.Div(
-                [
-                    html.Label("Node id"),
-                    dcc.Textarea(id="node-select", value="0"),
-                    html.Label("y-axis to plot"),
-                    YAxisSelect(),
-                    html.Label("Time range"),
-                    TimeRangeSelect(),
-                    html.Br(),
-                    html.Button("Plot", id="refresh-button", n_clicks=0),
-                    html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
-                ],
-                className="sidebar-content",
-            ),
+            html.Div(id="buttons-section", className="sidebar-content"),
         ],
         className="four columns sidebar",
     ),
     graph_section,
 ]
 
-sensors_page = [
-    dcc.Store(id="click-output"),
-    html.Div(
-        [
-            html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-            Nav(selected_tab="sensors"),
-            html.Label("Installation reference", className="sidebar-content"),
-            InstallationSelect(),
-            html.Div(
-                [
-                    html.Label("Node id"),
-                    dcc.Textarea(id="node-select", value="0"),
-                    html.Label("Sensor"),
-                    SensorSelect(),
-                    html.Label("Time range"),
-                    TimeRangeSelect(),
-                    html.Br(),
-                    html.Button("Plot", id="refresh-button", n_clicks=0),
-                    html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
-                ],
-                className="sidebar-content",
-            ),
-        ],
-        className="four columns sidebar",
-    ),
-    graph_section,
-]
+buttons_sections = {
+    "connection_statistics": [
+        html.Label("Node id"),
+        dcc.Textarea(id="node-select", value="0"),
+        html.Label("y-axis to plot"),
+        YAxisSelect(),
+        html.Label("Time range"),
+        TimeRangeSelect(),
+        html.Br(),
+        html.Button("Plot", id="refresh-button", n_clicks=0),
+        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+    ],
+    "sensors": [
+        html.Label("Node id"),
+        dcc.Textarea(id="node-select", value="0"),
+        html.Label("Sensor"),
+        SensorSelect(),
+        html.Label("Time range"),
+        TimeRangeSelect(),
+        html.Br(),
+        html.Button("Plot", id="refresh-button", n_clicks=0),
+        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+    ],
+}
 
 
 app.layout = html.Div(
-    connection_stats_page,
-    id="main-page",
+    common_page,
     className="row flex-display",
     style={"height": "100vh"},
 )
@@ -141,17 +124,16 @@ def update_installation_selector(refresh):
 
 
 @app.callback(
-    Output("main-page", "children"),
+    Output("buttons-section", "children"),
     Input("nav-tabs", "value"),
 )
-def change_page(page_name):
-    """Change the page shown on the dashboard when a navigation tab is clicked.
+def change_buttons_section(section_name):
+    """Change the buttons shown on the dashboard when a navigation tab is clicked.
 
-    :param str page_name:
+    :param str section_name:
     :return list:
     """
-    pages = {"sensors": sensors_page, "connection_statistics": connection_stats_page}
-    return pages[page_name]
+    return buttons_sections[section_name]
 
 
 # Run the Dash app
