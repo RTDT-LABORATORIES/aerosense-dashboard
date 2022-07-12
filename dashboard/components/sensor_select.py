@@ -8,7 +8,7 @@ def SensorSelect():
 
     return dcc.Dropdown(
         options=sensor_types,
-        id="y_axis_select",
+        id="y-axis-select",
         value=sensor_types[0],
         persistence=True,
     )

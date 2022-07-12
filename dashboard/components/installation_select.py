@@ -8,7 +8,7 @@ def InstallationSelect(current_installation_reference=None):
 
     return dcc.Dropdown(
         options=installations,
-        id="installation_select",
+        id="installation-select",
         value=current_installation_reference or installations[0]["value"],
         className="sidebar-content",
     )

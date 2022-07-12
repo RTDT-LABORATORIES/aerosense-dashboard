@@ -83,10 +83,10 @@ app.layout = html.Div(
 @app.callback(
     Output("graph", "figure"),
     State("nav-tabs", "value"),
-    State("installation_select", "value"),
+    State("installation-select", "value"),
     State("node-select", "value"),
-    State("y_axis_select", "value"),
-    State("time_range_select", "value"),
+    State("y-axis-select", "value"),
+    State("time-range-select", "value"),
     Input("refresh-button", "n_clicks"),
 )
 @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
@@ -111,7 +111,7 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
 
 
 @app.callback(
-    Output("installation_select", "options"),
+    Output("installation-select", "options"),
     Input("installation-check-button", "n_clicks"),
 )
 def update_installation_selector(refresh):
