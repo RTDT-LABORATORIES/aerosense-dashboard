@@ -8,6 +8,7 @@ from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_sensors
+from dashboard.queries import BigQuery
 
 
 CACHE_TIMEOUT = 3600
@@ -38,7 +39,7 @@ connection_stats_page = [
             html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
             Nav(selected_tab="connection_statistics"),
             html.Label("Installation reference", className="sidebar-content"),
-            html.Div([InstallationSelect()], id="installation-selection-section"),
+            InstallationSelect(),
             html.Div(
                 [
                     html.Label("Node id"),
@@ -70,7 +71,7 @@ sensors_page = [
             html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
             Nav(selected_tab="sensors"),
             html.Label("Installation reference", className="sidebar-content"),
-            html.Div([InstallationSelect()], id="installation-selection-section"),
+            InstallationSelect(),
             html.Div(
                 [
                     html.Label("Node id"),
@@ -135,17 +136,16 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
 
 
 @app.callback(
-    Output("installation-selection-section", "children"),
+    Output("installation_select", "options"),
     Input("installation-check-button", "n_clicks"),
-    State("installation_select", "value"),
 )
-def update_installation_selector(refresh, current_installation_reference):
+def update_installation_selector(refresh):
     """Update the installation selector with any new installations when the refresh button is clicked.
 
     :param int refresh:
     :return list:
     """
-    return [InstallationSelect(current_installation_reference)]
+    return BigQuery().get_installations()
 
 
 @app.callback(

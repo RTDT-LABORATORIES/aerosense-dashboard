@@ -126,7 +126,12 @@ class BigQuery:
         FROM `aerosense-twined.greta.installation`
         """
 
-        return self.client.query(installations_sql).to_dataframe()
+        installations = self.client.query(installations_sql).to_dataframe().to_dict(orient="records")
+
+        return [
+            {"label": f"{row['reference']} (Turbine {row['turbine_id']})", "value": row["reference"]}
+            for row in installations
+        ]
 
     def get_installation(self, installation_reference):
         """Query for an installation (with sensor coordinate data)
