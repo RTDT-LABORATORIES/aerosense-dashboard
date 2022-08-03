@@ -125,8 +125,13 @@ def update_installation_selector(refresh):
 
 
 @app.callback(
-    Output("node-select", "options"),
-    Input("installation-select", "value"),
+    [
+        Output("node-select", "options"),
+        Output("node-select", "value"),
+    ],
+    [
+        Input("installation-select", "value"),
+    ],
 )
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def update_node_selector(installation_reference):
@@ -135,7 +140,14 @@ def update_node_selector(installation_reference):
     :param str installation_reference:
     :return list(str):
     """
-    return BigQuery().get_nodes(installation_reference)
+    nodes = BigQuery().get_nodes(installation_reference)
+
+    try:
+        first_option = nodes[0]
+    except IndexError:
+        first_option = None
+
+    return nodes, first_option
 
 
 @app.callback(
