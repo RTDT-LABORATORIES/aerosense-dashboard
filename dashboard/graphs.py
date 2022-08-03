@@ -66,5 +66,8 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range):
         all_time=all_time,
     )
 
-    figure = px.line(df, x="datetime", y="sensor_value")
-    return figure
+    return px.line(
+        df,
+        x="datetime",
+        y=[column for column in df.columns if column.startswith("f") and column.endswith("_")],
+    )
