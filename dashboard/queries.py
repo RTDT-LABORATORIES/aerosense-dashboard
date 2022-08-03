@@ -123,6 +123,7 @@ class BigQuery:
         installations_sql = """
         SELECT reference, turbine_id, location
         FROM `aerosense-twined.greta.installation`
+        ORDER BY reference
         """
 
         installations = self.client.query(installations_sql).to_dataframe().to_dict(orient="records")
@@ -158,6 +159,7 @@ class BigQuery:
         query = """
         SELECT name
         FROM `aerosense-twined.greta.sensor_type`
+        ORDER BY name
         """
 
         return self.client.query(query).to_dataframe()["name"].to_list()
