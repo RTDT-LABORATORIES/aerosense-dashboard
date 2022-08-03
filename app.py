@@ -148,7 +148,7 @@ def update_graph_title(selected_y_axis):
     :param str selected_y_axis:
     :return str:
     """
-    return selected_y_axis
+    return " ".join(selected_y_axis.split("_")).capitalize()
 
 
 @app.callback(
