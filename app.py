@@ -27,7 +27,7 @@ app.config.suppress_callback_exceptions = True
 
 graph_section = html.Div(
     [
-        html.Div([dcc.Markdown(id="text")], className="text-box"),
+        html.Div([html.H2("A title!", id="graph-title")], className="text-box"),
         dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
     ],
     className="eight columns",
@@ -136,6 +136,19 @@ def update_node_selector(installation_reference):
     :return list(str):
     """
     return BigQuery().get_nodes(installation_reference)
+
+
+@app.callback(
+    Output("graph-title", "children"),
+    Input("y-axis-select", "value"),
+)
+def update_graph_title(selected_y_axis):
+    """Update the graph title with the name of the currently selected y-axis.
+
+    :param str selected_y_axis:
+    :return str:
+    """
+    return selected_y_axis
 
 
 @app.callback(
