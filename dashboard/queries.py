@@ -40,10 +40,7 @@ class BigQuery:
         :param bool all_time:
         :return pandas.Dataframe:
         """
-        if sensor_type_reference == "microphone":
-            table_name = "aerosense-twined.greta.microphone_data"
-        else:
-            table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
+        table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
 
         conditions = """
         WHERE datetime BETWEEN @start AND @finish
