@@ -4,6 +4,7 @@ from dash.dependencies import Input, Output, State
 from flask_caching import Cache
 
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
+from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
@@ -50,7 +51,7 @@ common_page = [
 buttons_sections = {
     "connection_statistics": [
         html.Label("Node id"),
-        dcc.Textarea(id="node-select", value="0"),
+        NodeSelect(),
         html.Label("y-axis to plot"),
         YAxisSelect(),
         html.Label("Time range"),
@@ -61,7 +62,7 @@ buttons_sections = {
     ],
     "sensors": [
         html.Label("Node id"),
-        dcc.Textarea(id="node-select", value="0"),
+        NodeSelect(),
         html.Label("Sensor"),
         SensorSelect(),
         html.Label("Time range"),
@@ -121,6 +122,20 @@ def update_installation_selector(refresh):
     :return list:
     """
     return BigQuery().get_installations()
+
+
+@app.callback(
+    Output("node-select", "options"),
+    Input("installation-select", "value"),
+)
+@cache.memoize(timeout=CACHE_TIMEOUT)
+def update_node_selector(installation_reference):
+    """Update the node selector options with the IDs of the nodes available for the given installation.
+
+    :param str installation_reference:
+    :return list(str):
+    """
+    return BigQuery().get_nodes(installation_reference)
 
 
 @app.callback(

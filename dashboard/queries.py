@@ -162,6 +162,25 @@ class BigQuery:
 
         return self.client.query(query).to_dataframe()["name"].to_list()
 
+    def get_nodes(self, installation_reference):
+        """Get the IDs of the nodes available for the given installation.
+
+        :param str installation_reference:
+        :return list(str):
+        """
+        query = """
+        SELECT node_id FROM `aerosense-twined.greta.sensor_data`
+        WHERE installation_reference = @installation_reference
+        GROUP BY node_id
+        ORDER BY node_id
+        """
+
+        query_config = bigquery.QueryJobConfig(
+            query_parameters=[bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference)]
+        )
+
+        return self.client.query(query, job_config=query_config).to_dataframe()["node_id"].to_list()
+
     def _get_time_period(self, start=None, finish=None, all_time=False):
         """Get the time period for the query. Defaults to the past day.
 
