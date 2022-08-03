@@ -40,19 +40,15 @@ class BigQuery:
         :param bool all_time:
         :return pandas.Dataframe:
         """
-        table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
+        if sensor_type_reference == "microphone":
+            table_name = "aerosense-twined.greta.microphone_data"
+        else:
+            table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
 
-        condition = """
+        conditions = """
         WHERE datetime BETWEEN @start AND @finish
         AND installation_reference = @installation_reference
         AND node_id = @node_id
-        ORDER BY datetime
-        """
-
-        query = f"""
-        SELECT COUNT(sensor_value)
-        FROM `{table_name}`
-        {condition}
         """
 
         start, finish = self._get_time_period(start, finish, all_time)
@@ -63,25 +59,31 @@ class BigQuery:
                 bigquery.ScalarQueryParameter("finish", "DATETIME", finish),
                 bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
                 bigquery.ScalarQueryParameter("node_id", "STRING", node_id),
-                bigquery.ScalarQueryParameter("sensor_type_reference", "STRING", sensor_type_reference),
             ]
         )
 
-        number_of_rows = self.client.query(query, job_config=query_config)
+        count_query = f"""
+        SELECT COUNT(datetime)
+        FROM `{table_name}`
+        {conditions}
+        """
+
+        number_of_rows = list(self.client.query(count_query, job_config=query_config).result())[0][0]
+
+        data_query = f"""
+        SELECT *
+        FROM `{table_name}`
+        {conditions}
+        ORDER BY datetime
+        """
 
         try:
             if number_of_rows > ROW_LIMIT:
+                data_query += "\nLIMIT 10000"
                 raise ValueError("Large amount of data (%d rows) - applying a %d limit.", number_of_rows, ROW_LIMIT)
 
         finally:
-            query = f"""
-            SELECT datetime, sensor_value
-            FROM `{table_name}`
-            {condition}
-            LIMIT 10000
-            """
-
-            return self.client.query(query, job_config=query_config).to_dataframe()
+            return self.client.query(data_query, job_config=query_config).to_dataframe()
 
     def get_aggregated_connection_statistics(
         self,
