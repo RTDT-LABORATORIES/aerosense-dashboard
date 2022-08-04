@@ -9,7 +9,7 @@ from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_sensors
-from dashboard.queries import BigQuery
+from dashboard.queries import ROW_LIMIT, BigQuery
 
 
 CACHE_TIMEOUT = 3600
@@ -27,7 +27,13 @@ app.config.suppress_callback_exceptions = True
 
 graph_section = html.Div(
     [
-        html.Div([html.H3(id="graph-title")], className="text-box"),
+        html.Div(
+            [
+                html.H3(id="graph-title"),
+                dcc.Markdown(id="data-limit-warning", className="warning"),
+            ],
+            className="text-box",
+        ),
         dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
     ],
     className="eight columns",
@@ -83,6 +89,7 @@ app.layout = html.Div(
 
 @app.callback(
     Output("graph", "figure"),
+    Output("data-limit-warning", "children"),
     State("nav-tabs", "value"),
     State("installation-select", "value"),
     State("node-select", "value"),
@@ -106,9 +113,14 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
         node_id = None
 
     if page_name == "connection_statistics":
-        return plot_connections_statistics(installation_reference, node_id, y_axis_column, time_range)
-    else:
-        return plot_sensors(installation_reference, node_id, y_axis_column, time_range)
+        return (plot_connections_statistics(installation_reference, node_id, y_axis_column, time_range), "")
+
+    figure, data_limit_applied = plot_sensors(installation_reference, node_id, y_axis_column, time_range)
+
+    if data_limit_applied:
+        return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
+
+    return (figure, "")
 
 
 @app.callback(

@@ -74,13 +74,13 @@ class BigQuery:
         ORDER BY datetime
         """
 
-        try:
-            if number_of_rows > ROW_LIMIT:
-                data_query += "\nLIMIT 10000"
-                raise ValueError("Large amount of data (%d rows) - applying a %d limit.", number_of_rows, ROW_LIMIT)
+        data_limit_applied = False
 
-        finally:
-            return self.client.query(data_query, job_config=query_config).to_dataframe()
+        if number_of_rows > ROW_LIMIT:
+            data_query += f"\nLIMIT {ROW_LIMIT}"
+            data_limit_applied = True
+
+        return (self.client.query(data_query, job_config=query_config).to_dataframe(), data_limit_applied)
 
     def get_aggregated_connection_statistics(
         self,

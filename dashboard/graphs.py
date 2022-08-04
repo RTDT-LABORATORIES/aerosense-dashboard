@@ -23,7 +23,7 @@ def plot_connections_statistics(installation_reference, node_id, y_axis_column, 
 def plot_sensors(installation_reference, node_id, sensor_name, time_range):
     start, finish, all_time = _generate_time_range(time_range)
 
-    df = BigQuery().get_sensor_data(
+    df, data_limit_applied = BigQuery().get_sensor_data(
         installation_reference,
         node_id,
         sensor_name,
@@ -32,10 +32,13 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range):
         all_time=all_time,
     )
 
-    return px.line(
-        df,
-        x="datetime",
-        y=[column for column in df.columns if column.startswith("f") and column.endswith("_")],
+    return (
+        px.line(
+            df,
+            x="datetime",
+            y=[column for column in df.columns if column.startswith("f") and column.endswith("_")],
+        ),
+        data_limit_applied,
     )
 
 
