@@ -49,6 +49,21 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range, custo
     )
 
 
+def plot_pressure_bar_chart(installation_reference, node_id, datetime):
+    df = BigQuery().get_sensor_data_at_datetime(installation_reference, node_id, "barometer", datetime)
+
+    sensor_names = [column for column in df.columns if column.startswith("f") and column.endswith("_")]
+
+    df_transposed = df[sensor_names].transpose()
+    df_transposed["sensor_name"] = sensor_names
+
+    return px.bar(
+        df_transposed,
+        x="sensor_name",
+        y=0,
+    )
+
+
 def _generate_time_range(time_range, custom_start_date, custom_end_date):
     """Generate a convenient time range to plot. The options are:
     - Last minute
