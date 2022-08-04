@@ -27,7 +27,6 @@ class BigQuery:
         sensor_type_reference,
         start=None,
         finish=None,
-        all_time=False,
     ):
         """Get sensor data for the given sensor type on the given node of the given installation over the given time
         period. The time period defaults to the last day.
@@ -48,7 +47,7 @@ class BigQuery:
         AND node_id = @node_id
         """
 
-        start, finish = self._get_time_period(start, finish, all_time)
+        start, finish = self._get_time_period(start, finish)
 
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
@@ -123,7 +122,6 @@ class BigQuery:
         node_id,
         start=None,
         finish=None,
-        all_time=False,
     ):
         """Query for minute-wise aggregated connection statistics over a day, by default the day up to now.
 
@@ -140,7 +138,7 @@ class BigQuery:
         ORDER BY datetime
         """
 
-        start, finish = self._get_time_period(start, finish, all_time)
+        start, finish = self._get_time_period(start, finish)
 
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
@@ -200,21 +198,13 @@ class BigQuery:
 
         return self.client.query(query, job_config=query_config).to_dataframe()["node_id"].to_list()
 
-    def _get_time_period(self, start=None, finish=None, all_time=False):
+    def _get_time_period(self, start=None, finish=None):
         """Get the time period for the query. Defaults to the past day.
 
         :param datetime.datetime|None start:
         :param datetime.datetime|None finish:
-        :param bool all_time:
         :return (datetime.datetime, datetime.datetime):
         """
-        if all_time:
-            start = datetime.datetime.min
-            finish = datetime.datetime.now()
-
-        # Default to the last day of data.
-        else:
-            finish = finish or datetime.datetime.now()
-            start = start or finish - datetime.timedelta(days=1)
-
+        finish = finish or datetime.datetime.now()
+        start = start or finish - datetime.timedelta(days=1)
         return start, finish
