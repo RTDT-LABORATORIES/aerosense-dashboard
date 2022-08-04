@@ -58,10 +58,11 @@ buttons_sections = {
     "connection_statistics": [
         html.Label("Node id"),
         NodeSelect(),
-        html.Label("y-axis to plot"),
+        html.Label("Connection statistic"),
         YAxisSelect(),
         html.Label("Time range"),
         TimeRangeSelect(),
+        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
         html.Br(),
         html.Button("Plot", id="refresh-button", n_clicks=0),
         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
@@ -73,6 +74,7 @@ buttons_sections = {
         SensorSelect(),
         html.Label("Time range"),
         TimeRangeSelect(),
+        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
         html.Br(),
         html.Button("Plot", id="refresh-button", n_clicks=0),
         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
@@ -95,10 +97,21 @@ app.layout = html.Div(
     State("node-select", "value"),
     State("y-axis-select", "value"),
     State("time-range-select", "value"),
+    State("custom-time-range-select", "start_date"),
+    State("custom-time-range-select", "end_date"),
     Input("refresh-button", "n_clicks"),
 )
 @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
-def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_range, refresh):
+def plot_graph(
+    page_name,
+    installation_reference,
+    node_id,
+    y_axis_column,
+    time_range,
+    custom_start_date,
+    custom_end_date,
+    refresh,
+):
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
 
@@ -113,9 +126,26 @@ def plot_graph(page_name, installation_reference, node_id, y_axis_column, time_r
         node_id = None
 
     if page_name == "connection_statistics":
-        return (plot_connections_statistics(installation_reference, node_id, y_axis_column, time_range), "")
+        return (
+            plot_connections_statistics(
+                installation_reference,
+                node_id,
+                y_axis_column,
+                time_range,
+                custom_start_date,
+                custom_end_date,
+            ),
+            "",
+        )
 
-    figure, data_limit_applied = plot_sensors(installation_reference, node_id, y_axis_column, time_range)
+    figure, data_limit_applied = plot_sensors(
+        installation_reference,
+        node_id,
+        y_axis_column,
+        time_range,
+        custom_start_date,
+        custom_end_date,
+    )
 
     if data_limit_applied:
         return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
@@ -173,6 +203,25 @@ def update_graph_title(selected_y_axis):
     :return str:
     """
     return " ".join(selected_y_axis.split("_")).capitalize()
+
+
+@app.callback(
+    [
+        Output("custom-time-range-select", "disabled"),
+        Output("custom-time-range-select", "start_date"),
+        Output("custom-time-range-select", "end_date"),
+    ],
+    [
+        Input("time-range-select", "value"),
+    ],
+)
+def enable_custom_time_range_select(time_range):
+    """Enable the custom time range selection if "Custom" is chosen in the time range selector.
+
+    :param str time_range:
+    :return bool:
+    """
+    return (time_range != "Custom", None, None)
 
 
 @app.callback(
