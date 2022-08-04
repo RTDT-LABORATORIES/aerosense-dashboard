@@ -8,7 +8,7 @@ from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics, plot_sensors
+from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
 from dashboard.queries import ROW_LIMIT, BigQuery
 
 
@@ -64,6 +64,7 @@ buttons_sections = {
         TimeRangeSelect(),
         dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
         html.Br(),
+        html.Div(id="time-range-slider"),
         html.Button("Plot", id="refresh-button", n_clicks=0),
         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
     ],
@@ -75,6 +76,20 @@ buttons_sections = {
         html.Label("Time range"),
         TimeRangeSelect(),
         dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
+        html.Br(),
+        html.Div(id="time-range-slider"),
+        html.Button("Plot", id="refresh-button", n_clicks=0),
+        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+    ],
+    "pressure_profile": [
+        html.Label("Node id"),
+        NodeSelect(),
+        html.Div(id="y-axis-select"),
+        html.Label("Time range"),
+        TimeRangeSelect(),
+        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
+        html.Br(),
+        dcc.Slider(min=0, max=20, step=5, value=0, id="time-range-slider"),
         html.Br(),
         html.Button("Plot", id="refresh-button", n_clicks=0),
         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
@@ -138,19 +153,22 @@ def plot_graph(
             "",
         )
 
-    figure, data_limit_applied = plot_sensors(
-        installation_reference,
-        node_id,
-        y_axis_column,
-        time_range,
-        custom_start_date,
-        custom_end_date,
-    )
+    elif page_name == "sensors":
+        figure, data_limit_applied = plot_sensors(
+            installation_reference,
+            node_id,
+            y_axis_column,
+            time_range,
+            custom_start_date,
+            custom_end_date,
+        )
 
-    if data_limit_applied:
-        return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
+        if data_limit_applied:
+            return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
 
-    return (figure, "")
+        return (figure, "")
+
+    return plot_pressure_bar_chart(installation_reference, node_id, None)
 
 
 @app.callback(
@@ -202,6 +220,9 @@ def update_graph_title(selected_y_axis):
     :param str selected_y_axis:
     :return str:
     """
+    if not selected_y_axis:
+        return ""
+
     return " ".join(selected_y_axis.split("_")).capitalize()
 
 

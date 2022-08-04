@@ -9,6 +9,7 @@ def Nav(selected_tab="connection_statistics"):
             children=[
                 dcc.Tab(label="Connection Stats", value="connection_statistics"),
                 dcc.Tab(label="Sensors", value="sensors"),
+                dcc.Tab(label="Pressure profile", value="pressure_profile"),
             ],
         ),
         className="sidebar-content",
