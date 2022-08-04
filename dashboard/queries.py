@@ -82,6 +82,41 @@ class BigQuery:
 
         return (self.client.query(data_query, job_config=query_config).to_dataframe(), data_limit_applied)
 
+    def get_sensor_data_at_datetime(self, installation_reference, node_id, sensor_type_reference, datetime):
+        """Get sensor data for the given sensor type on the given node of the given installation over the given time
+        period. The time period defaults to the last day.
+
+        :param str installation_reference:
+        :param str|None node_id:
+        :param str sensor_type_reference:
+        :param datetime.datetime|None datetime:
+        :return pandas.Dataframe:
+        """
+        table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
+
+        conditions = """
+        WHERE datetime = @datetime
+        AND installation_reference = @installation_reference
+        AND node_id = @node_id
+        """
+
+        query_config = bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("datetime", "DATETIME", datetime),
+                bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
+                bigquery.ScalarQueryParameter("node_id", "STRING", node_id),
+            ]
+        )
+
+        query = f"""
+        SELECT *
+        FROM `{table_name}`
+        {conditions}
+        ORDER BY datetime
+        """
+
+        return self.client.query(query, job_config=query_config).to_dataframe()
+
     def get_aggregated_connection_statistics(
         self,
         installation_reference,
