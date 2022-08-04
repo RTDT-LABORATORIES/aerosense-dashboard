@@ -27,7 +27,7 @@ app.config.suppress_callback_exceptions = True
 
 graph_section = html.Div(
     [
-        html.Div([html.H2("A title!", id="graph-title")], className="text-box"),
+        html.Div([html.H3(id="graph-title")], className="text-box"),
         dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
     ],
     className="eight columns",
