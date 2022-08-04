@@ -133,24 +133,6 @@ class BigQuery:
             for row in installations
         ]
 
-    def get_installation(self, installation_reference):
-        """Query for an installation (with sensor coordinate data)
-        May return multiple rows if the installation has had upgraded hardware
-
-        :param [str] installation_reference: The installation reference to query for, e.g. "ost-wt-tests"
-        """
-        installation_sql = """
-        SELECT reference, turbine_id, location
-        FROM `aerosense-twined.greta.installation`
-        WHERE installation_reference = @installation_reference
-        """
-
-        query_config = bigquery.QueryJobConfig(
-            query_parameters=[bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference)]
-        )
-
-        return self.client.query(installation_sql, job_config=query_config).to_dataframe()
-
     def get_sensor_types(self):
         """Get the available sensor types.
 
