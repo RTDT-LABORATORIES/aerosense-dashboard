@@ -1,3 +1,5 @@
+import re
+
 from plotly import express as px
 
 from dashboard.queries import BigQuery
@@ -52,9 +54,10 @@ def plot_pressure_bar_chart(installation_reference, node_id, datetime):
     sensor_names = [column for column in df.columns if column.startswith("f") and column.endswith("_")]
 
     df_transposed = df[sensor_names].transpose()
-    df_transposed["sensor_name"] = sensor_names
+    df_transposed["Barometer number"] = [re.findall(r"f(\d+)_", sensor_name)[0] for sensor_name in sensor_names]
 
     if len(df) == 0:
         df_transposed[0] = 0
 
-    return px.bar(df_transposed, x="sensor_name", y=0)
+    df_transposed["Raw value"] = df_transposed[0]
+    return px.bar(df_transposed, x="Barometer number", y="Raw value")
