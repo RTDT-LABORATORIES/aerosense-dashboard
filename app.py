@@ -1,4 +1,7 @@
+import datetime as dt
+
 import dash
+import dash_daq as daq
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from flask_caching import Cache
@@ -8,7 +11,7 @@ from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics, plot_sensors
+from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
 from dashboard.queries import ROW_LIMIT, BigQuery
 
 
@@ -48,7 +51,6 @@ tabs = {
                             disabled=True,
                         ),
                         html.Br(),
-                        html.Div(id="time-range-slider"),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
@@ -93,7 +95,6 @@ tabs = {
                             disabled=True,
                         ),
                         html.Br(),
-                        html.Div(id="time-range-slider"),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
@@ -128,19 +129,20 @@ tabs = {
                     [
                         html.Label("Node id"),
                         NodeSelect(),
-                        html.Div(id="y-axis-select"),
-                        html.Label("Time range"),
-                        TimeRangeSelect(),
-                        dcc.DatePickerRange(
-                            id="custom-time-range-select",
+                        html.Label("Date"),
+                        dcc.DatePickerSingle(
+                            id="date-select",
                             display_format="Do MMM Y",
                             persistence=True,
-                            disabled=True,
                         ),
                         html.Br(),
-                        dcc.Slider(min=0, max=20, step=5, value=0, id="time-range-slider"),
+                        html.Label("Hour"),
+                        daq.NumericInput(id="hour", value=0, min=0, max=23, persistence=True),
+                        html.Label("Minute"),
+                        daq.NumericInput(id="minute", value=0, min=0, max=59, persistence=True),
+                        html.Label("Second"),
+                        daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
                         html.Br(),
-                        html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
                     id="buttons-section",
@@ -266,6 +268,25 @@ def plot_sensors_graph(
         return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
 
     return (figure, "")
+
+
+@app.callback(
+    Output("pressure-profile-graph", "figure"),
+    Input("installation-select", "value"),
+    Input("node-select", "value"),
+    Input("date-select", "date"),
+    Input("hour", "value"),
+    Input("minute", "value"),
+    Input("second", "value"),
+)
+# @cache.memoize(timeout=CACHE_TIMEOUT)
+def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second):
+    if not node_id:
+        node_id = None
+
+    datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
+
+    return plot_pressure_bar_chart(installation_reference=installation_reference, node_id=node_id, datetime=datetime)
 
 
 @app.callback(
