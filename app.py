@@ -143,6 +143,7 @@ tabs = {
                         html.Label("Second"),
                         daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
                         html.Br(),
+                        html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
                     id="buttons-section",
@@ -272,15 +273,16 @@ def plot_sensors_graph(
 
 @app.callback(
     Output("pressure-profile-graph", "figure"),
-    Input("installation-select", "value"),
-    Input("node-select", "value"),
-    Input("date-select", "date"),
-    Input("hour", "value"),
-    Input("minute", "value"),
-    Input("second", "value"),
+    State("installation-select", "value"),
+    State("node-select", "value"),
+    State("date-select", "date"),
+    State("hour", "value"),
+    State("minute", "value"),
+    State("second", "value"),
+    Input("refresh-button", "n_clicks"),
 )
-# @cache.memoize(timeout=CACHE_TIMEOUT)
-def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second):
+# @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
+def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second, refresh):
     if not node_id:
         node_id = None
 
