@@ -89,14 +89,14 @@ class BigQuery:
         datetime,
         tolerance=1,
     ):
-        """Get sensor data for the given sensor type on the given node of the given installation over the given time
-        period. The time period defaults to the last day.
+        """Get sensor data for the given sensor type on the given node of the given installation at the given datetime.
+        The first datetime within a tolerance of plus/minus half of `tolerance` is used.
 
         :param str installation_reference:
         :param str|None node_id:
         :param str sensor_type_reference:
         :param datetime.datetime|None datetime:
-        :param float tolerance:
+        :param float tolerance: the tolerance on the given datetime in seconds
         :return pandas.Dataframe:
         """
         table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
