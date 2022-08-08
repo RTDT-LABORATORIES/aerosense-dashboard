@@ -8,7 +8,7 @@ from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
+from dashboard.graphs import plot_connections_statistics, plot_sensors
 from dashboard.queries import ROW_LIMIT, BigQuery
 
 
@@ -25,89 +25,161 @@ cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".das
 app.config.suppress_callback_exceptions = True
 
 
-graph_section = html.Div(
-    [
+tabs = {
+    "connection_statistics": [
         html.Div(
             [
-                html.H3(id="graph-title"),
-                dcc.Markdown(id="data-limit-warning", className="warning"),
+                html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
+                Nav(selected_tab="connection_statistics"),
+                html.Label("Installation reference", className="sidebar-content"),
+                InstallationSelect(),
+                html.Div(
+                    [
+                        html.Label("Node id"),
+                        NodeSelect(),
+                        html.Label("Connection statistic"),
+                        YAxisSelect(),
+                        html.Label("Time range"),
+                        TimeRangeSelect(),
+                        dcc.DatePickerRange(
+                            id="custom-time-range-select",
+                            display_format="Do MMM Y",
+                            persistence=True,
+                            disabled=True,
+                        ),
+                        html.Br(),
+                        html.Div(id="time-range-slider"),
+                        html.Button("Plot", id="refresh-button", n_clicks=0),
+                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+                    ],
+                    id="buttons-section",
+                    className="sidebar-content",
+                ),
             ],
-            className="text-box",
+            className="four columns sidebar",
         ),
-        dcc.Graph(id="graph", style={"margin": "0px 20px", "height": "45vh"}),
-    ],
-    className="eight columns",
-)
-
-common_page = [
-    dcc.Store(id="click-output"),
-    html.Div(
-        [
-            html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-            Nav(selected_tab="connection_statistics"),
-            html.Label("Installation reference", className="sidebar-content"),
-            InstallationSelect(),
-            html.Div(id="buttons-section", className="sidebar-content"),
-        ],
-        className="four columns sidebar",
-    ),
-    graph_section,
-]
-
-buttons_sections = {
-    "connection_statistics": [
-        html.Label("Node id"),
-        NodeSelect(),
-        html.Label("Connection statistic"),
-        YAxisSelect(),
-        html.Label("Time range"),
-        TimeRangeSelect(),
-        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
-        html.Br(),
-        html.Div(id="time-range-slider"),
-        html.Button("Plot", id="refresh-button", n_clicks=0),
-        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H3(id="graph-title"),
+                    ],
+                    className="text-box",
+                ),
+                dcc.Graph(id="connection-statistics-graph", style={"margin": "0px 20px", "height": "45vh"}),
+            ],
+            className="eight columns",
+        ),
     ],
     "sensors": [
-        html.Label("Node id"),
-        NodeSelect(),
-        html.Label("Sensor"),
-        SensorSelect(),
-        html.Label("Time range"),
-        TimeRangeSelect(),
-        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
-        html.Br(),
-        html.Div(id="time-range-slider"),
-        html.Button("Plot", id="refresh-button", n_clicks=0),
-        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+        html.Div(
+            [
+                html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
+                Nav(selected_tab="sensors"),
+                html.Label("Installation reference", className="sidebar-content"),
+                InstallationSelect(),
+                html.Div(
+                    [
+                        html.Label("Node id"),
+                        NodeSelect(),
+                        html.Label("Sensor"),
+                        SensorSelect(),
+                        html.Label("Time range"),
+                        TimeRangeSelect(),
+                        dcc.DatePickerRange(
+                            id="custom-time-range-select",
+                            display_format="Do MMM Y",
+                            persistence=True,
+                            disabled=True,
+                        ),
+                        html.Br(),
+                        html.Div(id="time-range-slider"),
+                        html.Button("Plot", id="refresh-button", n_clicks=0),
+                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+                    ],
+                    id="buttons-section",
+                    className="sidebar-content",
+                ),
+            ],
+            className="four columns sidebar",
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H3(id="graph-title"),
+                        dcc.Markdown(id="data-limit-warning", className="warning"),
+                    ],
+                    className="text-box",
+                ),
+                dcc.Graph(id="sensors-graph", style={"margin": "0px 20px", "height": "45vh"}),
+            ],
+            className="eight columns",
+        ),
     ],
     "pressure_profile": [
-        html.Label("Node id"),
-        NodeSelect(),
-        html.Div(id="y-axis-select"),
-        html.Label("Time range"),
-        TimeRangeSelect(),
-        dcc.DatePickerRange(id="custom-time-range-select", display_format="Do MMM Y", persistence=True, disabled=True),
-        html.Br(),
-        dcc.Slider(min=0, max=20, step=5, value=0, id="time-range-slider"),
-        html.Br(),
-        html.Button("Plot", id="refresh-button", n_clicks=0),
-        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+        html.Div(
+            [
+                html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
+                Nav(selected_tab="pressure_profile"),
+                html.Label("Installation reference", className="sidebar-content"),
+                InstallationSelect(),
+                html.Div(
+                    [
+                        html.Label("Node id"),
+                        NodeSelect(),
+                        html.Div(id="y-axis-select"),
+                        html.Label("Time range"),
+                        TimeRangeSelect(),
+                        dcc.DatePickerRange(
+                            id="custom-time-range-select",
+                            display_format="Do MMM Y",
+                            persistence=True,
+                            disabled=True,
+                        ),
+                        html.Br(),
+                        dcc.Slider(min=0, max=20, step=5, value=0, id="time-range-slider"),
+                        html.Br(),
+                        html.Button("Plot", id="refresh-button", n_clicks=0),
+                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+                    ],
+                    id="buttons-section",
+                    className="sidebar-content",
+                ),
+            ],
+            className="four columns sidebar",
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H3(id="graph-title"),
+                    ],
+                    className="text-box",
+                ),
+                dcc.Graph(id="pressure-profile-graph", style={"margin": "0px 20px", "height": "45vh"}),
+            ],
+            className="eight columns",
+        ),
     ],
 }
 
 
 app.layout = html.Div(
-    common_page,
+    [
+        dcc.Store(id="click-output"),
+        html.Div(
+            tabs["connection_statistics"],
+            id="app",
+        ),
+    ],
     className="row flex-display",
     style={"height": "100vh"},
 )
 
 
 @app.callback(
-    Output("graph", "figure"),
-    Output("data-limit-warning", "children"),
-    State("nav-tabs", "value"),
+    Output("connection-statistics-graph", "figure"),
     State("installation-select", "value"),
     State("node-select", "value"),
     State("y-axis-select", "value"),
@@ -117,8 +189,7 @@ app.layout = html.Div(
     Input("refresh-button", "n_clicks"),
 )
 @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
-def plot_graph(
-    page_name,
+def plot_connection_statistics_graph(
     installation_reference,
     node_id,
     y_axis_column,
@@ -130,7 +201,6 @@ def plot_graph(
     """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
 
-    :param str page_name:
     :param str installation_reference:
     :param str y_axis_column:
     :param str time_range:
@@ -140,35 +210,62 @@ def plot_graph(
     if not node_id:
         node_id = None
 
-    if page_name == "connection_statistics":
-        return (
-            plot_connections_statistics(
-                installation_reference,
-                node_id,
-                y_axis_column,
-                time_range,
-                custom_start_date,
-                custom_end_date,
-            ),
-            "",
-        )
+    return plot_connections_statistics(
+        installation_reference,
+        node_id,
+        y_axis_column,
+        time_range,
+        custom_start_date,
+        custom_end_date,
+    )
 
-    elif page_name == "sensors":
-        figure, data_limit_applied = plot_sensors(
-            installation_reference,
-            node_id,
-            y_axis_column,
-            time_range,
-            custom_start_date,
-            custom_end_date,
-        )
 
-        if data_limit_applied:
-            return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
+@app.callback(
+    Output("sensors-graph", "figure"),
+    Output("data-limit-warning", "children"),
+    State("installation-select", "value"),
+    State("node-select", "value"),
+    State("y-axis-select", "value"),
+    State("time-range-select", "value"),
+    State("custom-time-range-select", "start_date"),
+    State("custom-time-range-select", "end_date"),
+    Input("refresh-button", "n_clicks"),
+)
+@cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
+def plot_sensors_graph(
+    installation_reference,
+    node_id,
+    y_axis_column,
+    time_range,
+    custom_start_date,
+    custom_end_date,
+    refresh,
+):
+    """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
+    changed or the refresh button is clicked.
 
-        return (figure, "")
+    :param str installation_reference:
+    :param str y_axis_column:
+    :param str time_range:
+    :param int refresh:
+    :return plotly.graph_objs.Figure:
+    """
+    if not node_id:
+        node_id = None
 
-    return plot_pressure_bar_chart(installation_reference, node_id, None)
+    figure, data_limit_applied = plot_sensors(
+        installation_reference,
+        node_id,
+        y_axis_column,
+        time_range,
+        custom_start_date,
+        custom_end_date,
+    )
+
+    if data_limit_applied:
+        return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
+
+    return (figure, "")
 
 
 @app.callback(
@@ -246,16 +343,16 @@ def enable_custom_time_range_select(time_range):
 
 
 @app.callback(
-    Output("buttons-section", "children"),
+    Output("app", "children"),
     Input("nav-tabs", "value"),
 )
-def change_buttons_section(section_name):
+def change_tabs(section_name):
     """Change the buttons shown on the dashboard when a navigation tab is clicked.
 
     :param str section_name:
     :return list:
     """
-    return buttons_sections[section_name]
+    return tabs[section_name]
 
 
 # Run the Dash app
