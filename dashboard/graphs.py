@@ -54,4 +54,7 @@ def plot_pressure_bar_chart(installation_reference, node_id, datetime):
     df_transposed = df[sensor_names].transpose()
     df_transposed["sensor_name"] = sensor_names
 
+    if len(df) == 0:
+        df_transposed[0] = 0
+
     return px.bar(df_transposed, x="sensor_name", y=0)
