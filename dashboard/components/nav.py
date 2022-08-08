@@ -11,6 +11,7 @@ def Nav(selected_tab="connection_statistics"):
                 dcc.Tab(label="Sensors", value="sensors"),
                 dcc.Tab(label="Pressure profile", value="pressure_profile"),
             ],
+            persistence=True,
         ),
         className="sidebar-content",
     )
