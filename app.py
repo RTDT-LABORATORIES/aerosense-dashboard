@@ -143,6 +143,15 @@ tabs = {
                         html.Label("Second"),
                         daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
                         html.Br(),
+                        dcc.Slider(
+                            id="time-slider",
+                            min=0,
+                            max=60,
+                            marks={i: str(i) for i in range(0, 60, 5)},
+                            value=0,
+                            updatemode="drag",
+                        ),
+                        html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
@@ -279,14 +288,18 @@ def plot_sensors_graph(
     State("hour", "value"),
     State("minute", "value"),
     State("second", "value"),
+    Input("time-slider", "value"),
     Input("refresh-button", "n_clicks"),
 )
-# @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
-def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second, refresh):
+@cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
+def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second, time_delta, refresh):
     if not node_id:
         node_id = None
 
-    datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
+    datetime = dt.datetime.combine(
+        date=dt.date.fromisoformat(date),
+        time=dt.time(hour, minute, second + int(time_delta)),
+    )
 
     return plot_pressure_bar_chart(installation_reference=installation_reference, node_id=node_id, datetime=datetime)
 
