@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from google.cloud import bigquery
 
@@ -81,7 +81,14 @@ class BigQuery:
 
         return (self.client.query(data_query, job_config=query_config).to_dataframe(), data_limit_applied)
 
-    def get_sensor_data_at_datetime(self, installation_reference, node_id, sensor_type_reference, datetime):
+    def get_sensor_data_at_datetime(
+        self,
+        installation_reference,
+        node_id,
+        sensor_type_reference,
+        datetime,
+        tolerance=1,
+    ):
         """Get sensor data for the given sensor type on the given node of the given installation over the given time
         period. The time period defaults to the last day.
 
@@ -89,19 +96,25 @@ class BigQuery:
         :param str|None node_id:
         :param str sensor_type_reference:
         :param datetime.datetime|None datetime:
+        :param float tolerance:
         :return pandas.Dataframe:
         """
         table_name = f"aerosense-twined.greta.sensor_data_{sensor_type_reference}"
 
         conditions = """
-        WHERE datetime = @datetime
+        WHERE datetime >= @start_datetime
+        AND datetime < @finish_datetime
         AND installation_reference = @installation_reference
         AND node_id = @node_id
         """
 
+        start_datetime = datetime - dt.timedelta(seconds=tolerance / 2)
+        finish_datetime = datetime + dt.timedelta(seconds=tolerance / 2)
+
         query_config = bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("datetime", "DATETIME", datetime),
+                bigquery.ScalarQueryParameter("start_datetime", "DATETIME", start_datetime),
+                bigquery.ScalarQueryParameter("finish_datetime", "DATETIME", finish_datetime),
                 bigquery.ScalarQueryParameter("installation_reference", "STRING", installation_reference),
                 bigquery.ScalarQueryParameter("node_id", "STRING", node_id),
             ]
@@ -205,6 +218,6 @@ class BigQuery:
         :param datetime.datetime|None finish:
         :return (datetime.datetime, datetime.datetime):
         """
-        finish = finish or datetime.datetime.now()
-        start = start or finish - datetime.timedelta(days=1)
+        finish = finish or dt.datetime.now()
+        start = start or finish - dt.timedelta(days=1)
         return start, finish
