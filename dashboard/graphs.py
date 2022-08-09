@@ -24,6 +24,7 @@ def plot_connections_statistics(
     )
 
     figure = px.line(df, x="datetime", y=y_axis_column)
+    figure.update_layout(xaxis_title="Date/time", yaxis_title="Raw value")
     return figure
 
 
@@ -48,7 +49,9 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range, custo
         inplace=True,
     )
 
-    return (px.line(df, x="datetime", y=cleaned_sensor_names), data_limit_applied)
+    figure = px.line(df, x="datetime", y=cleaned_sensor_names)
+    figure.update_layout(xaxis_title="Date/time", yaxis_title="Raw value")
+    return (figure, data_limit_applied)
 
 
 def plot_pressure_bar_chart(installation_reference, node_id, datetime):
