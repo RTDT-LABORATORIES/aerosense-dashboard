@@ -51,10 +51,9 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range, custo
 def plot_pressure_bar_chart(installation_reference, node_id, datetime):
     df = BigQuery().get_sensor_data_at_datetime(installation_reference, node_id, "barometer", datetime, tolerance=1)
 
-    sensor_names = [column for column in df.columns if column.startswith("f") and column.endswith("_")]
-
-    df_transposed = df[sensor_names].transpose()
-    df_transposed["Barometer number"] = [re.findall(r"f(\d+)_", sensor_name)[0] for sensor_name in sensor_names]
+    original_sensor_names, cleaned_sensor_names = _get_cleaned_sensor_column_names(df)
+    df_transposed = df[original_sensor_names].transpose()
+    df_transposed["Barometer number"] = cleaned_sensor_names
 
     if len(df) == 0:
         df_transposed[0] = 0
@@ -65,3 +64,15 @@ def plot_pressure_bar_chart(installation_reference, node_id, datetime):
     figure.add_bar(x=df_transposed["Barometer number"], y=df_transposed["Raw value"])
     figure.update_layout(showlegend=False)
     return figure
+
+
+def _get_cleaned_sensor_column_names(dataframe):
+    """Get cleaned sensor column names for a dataframe when the columns are named like "f0_", "f1_"... "fn_" for `n`
+    sensors.
+
+    :param pandas.DataFrame dataframe: a dataframe containing columns of sensor data named like "f0_", "f1_"...
+    :return (list, list): the uncleaned and cleaned sensor names
+    """
+    original_names = [column for column in dataframe.columns if column.startswith("f") and column.endswith("_")]
+    cleaned_names = [re.findall(r"f(\d+)_", sensor_name)[0] for sensor_name in original_names]
+    return original_names, cleaned_names
