@@ -147,6 +147,7 @@ tabs = {
                             id="time-slider",
                             min=0,
                             max=60,
+                            step=1,
                             marks={i: str(i) for i in range(0, 60, 5)},
                             value=0,
                             updatemode="drag",
