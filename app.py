@@ -34,22 +34,28 @@ tabs = {
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
                 Nav(selected_tab="connection_statistics"),
-                html.Label("Installation reference", className="sidebar-content"),
-                InstallationSelect(),
+                html.Br(),
                 html.Div(
                     [
+                        html.Label(html.B("Installation")),
+                        html.Label("Installation reference"),
+                        InstallationSelect(),
                         html.Label("Node id"),
                         NodeSelect(),
+                        html.Br(),
+                        html.Label(html.B("Graph")),
                         html.Label("Connection statistic"),
                         YAxisSelect(),
                         html.Label("Time range"),
                         TimeRangeSelect(),
+                        html.Br(),
                         dcc.DatePickerRange(
                             id="custom-time-range-select",
                             display_format="Do MMM Y",
                             persistence=True,
                             disabled=True,
                         ),
+                        html.Br(),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
@@ -78,22 +84,28 @@ tabs = {
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
                 Nav(selected_tab="sensors"),
-                html.Label("Installation reference", className="sidebar-content"),
-                InstallationSelect(),
+                html.Br(),
                 html.Div(
                     [
+                        html.Label(html.B("Installation")),
+                        html.Label("Installation reference"),
+                        InstallationSelect(),
                         html.Label("Node id"),
                         NodeSelect(),
+                        html.Br(),
+                        html.Label(html.B("Graph")),
                         html.Label("Sensor"),
                         SensorSelect(),
                         html.Label("Time range"),
                         TimeRangeSelect(),
+                        html.Br(),
                         dcc.DatePickerRange(
                             id="custom-time-range-select",
                             display_format="Do MMM Y",
                             persistence=True,
                             disabled=True,
                         ),
+                        html.Br(),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
@@ -123,12 +135,16 @@ tabs = {
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
                 Nav(selected_tab="pressure_profile"),
-                html.Label("Installation reference", className="sidebar-content"),
-                InstallationSelect(),
+                html.Br(),
                 html.Div(
                     [
+                        html.Label(html.B("Installation")),
+                        html.Label("Installation reference"),
+                        InstallationSelect(),
                         html.Label("Node id"),
                         NodeSelect(),
+                        html.Br(),
+                        html.Label(html.B("Start date/time")),
                         html.Label("Date"),
                         dcc.DatePickerSingle(
                             id="date-select",
@@ -142,6 +158,8 @@ tabs = {
                         daq.NumericInput(id="minute", value=0, min=0, max=59, persistence=True),
                         html.Label("Second"),
                         daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
+                        html.Br(),
+                        html.Label(html.B("Step forward (seconds)")),
                         html.Br(),
                         dcc.Slider(
                             id="time-slider",
@@ -166,7 +184,7 @@ tabs = {
             [
                 html.Div(
                     [
-                        html.H3(id="graph-title"),
+                        html.H3("Pressure profile", id="graph-title"),
                     ],
                     className="text-box",
                 ),
