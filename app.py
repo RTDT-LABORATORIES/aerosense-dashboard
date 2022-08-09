@@ -48,7 +48,7 @@ tabs = {
                         YAxisSelect(),
                         html.Label("Time range"),
                         TimeRangeSelect(),
-                        html.Br(),
+                        html.Label("Custom date"),
                         dcc.DatePickerRange(
                             id="custom-time-range-select",
                             display_format="Do MMM Y",
@@ -98,7 +98,7 @@ tabs = {
                         SensorSelect(),
                         html.Label("Time range"),
                         TimeRangeSelect(),
-                        html.Br(),
+                        html.Label("Custom date"),
                         dcc.DatePickerRange(
                             id="custom-time-range-select",
                             display_format="Do MMM Y",
