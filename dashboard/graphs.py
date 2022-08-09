@@ -38,14 +38,17 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range, custo
         finish=finish,
     )
 
-    return (
-        px.line(
-            df,
-            x="datetime",
-            y=[column for column in df.columns if column.startswith("f") and column.endswith("_")],
-        ),
-        data_limit_applied,
+    original_sensor_names, cleaned_sensor_names = _get_cleaned_sensor_column_names(df)
+
+    df.rename(
+        columns={
+            original_name: cleaned_name
+            for original_name, cleaned_name in zip(original_sensor_names, cleaned_sensor_names)
+        },
+        inplace=True,
     )
+
+    return (px.line(df, x="datetime", y=cleaned_sensor_names), data_limit_applied)
 
 
 def plot_pressure_bar_chart(installation_reference, node_id, datetime):
