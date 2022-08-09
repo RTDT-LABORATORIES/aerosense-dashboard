@@ -60,4 +60,8 @@ def plot_pressure_bar_chart(installation_reference, node_id, datetime):
         df_transposed[0] = 0
 
     df_transposed["Raw value"] = df_transposed[0]
-    return px.bar(df_transposed, x="Barometer number", y="Raw value")
+
+    figure = px.line(df_transposed, x="Barometer number", y="Raw value")
+    figure.add_bar(x=df_transposed["Barometer number"], y=df_transposed["Raw value"])
+    figure.update_layout(showlegend=False)
+    return figure
