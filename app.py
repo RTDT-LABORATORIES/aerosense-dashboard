@@ -16,21 +16,14 @@ from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_char
 from dashboard.queries import ROW_LIMIT, BigQuery
 
 
-CACHE_TIMEOUT = 3600
-
-
 logger = logging.getLogger(__name__)
 
-
-app = dash.Dash(
-    __name__,
-    meta_tags=[{"name": "viewport", "content": "width=device-width"}],
-)
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}])
 app.title = "Aerosense Dashboard"
-
-cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 app.config.suppress_callback_exceptions = True
 
+CACHE_TIMEOUT = 3600
+cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 
 tabs = {
     "connection_statistics": [
@@ -199,7 +192,6 @@ tabs = {
     ],
 }
 
-
 app.layout = html.Div(
     [html.Div(tabs["connection_statistics"], id="app")],
     className="row flex-display",
@@ -298,7 +290,15 @@ def plot_sensors_graph(
 
 
 @cache.memoize()
-def get_pressure_profile_time_window(installation_reference, node_id, start_datetime, finish_datetime):
+def get_pressure_profiles_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
+    """Get pressure profiles for the given node during the given time window.
+
+    :param str installation_reference:
+    :param str node_id:
+    :param datetime.datetime start_datetime:
+    :param datetime.datetime finish_datetime:
+    :return pandas.DataFrame:
+    """
     df, _ = BigQuery().get_sensor_data(
         installation_reference=installation_reference,
         node_id=node_id,
@@ -334,7 +334,7 @@ def plot_pressure_profile_graph(installation_reference, node_id, date, hour, min
 
     initial_datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
 
-    df = get_pressure_profile_time_window(
+    df = get_pressure_profiles_for_time_window(
         installation_reference=installation_reference,
         node_id=node_id,
         start_datetime=initial_datetime,
