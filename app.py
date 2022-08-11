@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 
 import dash
 import dash_daq as daq
@@ -16,6 +17,9 @@ from dashboard.queries import ROW_LIMIT, BigQuery
 
 
 CACHE_TIMEOUT = 3600
+
+
+logger = logging.getLogger(__name__)
 
 
 app = dash.Dash(
@@ -197,13 +201,7 @@ tabs = {
 
 
 app.layout = html.Div(
-    [
-        dcc.Store(id="click-output"),
-        html.Div(
-            tabs["connection_statistics"],
-            id="app",
-        ),
-    ],
+    [html.Div(tabs["connection_statistics"], id="app")],
     className="row flex-display",
     style={"height": "100vh"},
 )
@@ -299,6 +297,26 @@ def plot_sensors_graph(
     return (figure, "")
 
 
+@cache.memoize()
+def get_pressure_profile_time_window(installation_reference, node_id, start_datetime, finish_datetime):
+    df, _ = BigQuery().get_sensor_data(
+        installation_reference=installation_reference,
+        node_id=node_id,
+        sensor_type_reference="barometer",
+        start=start_datetime,
+        finish=finish_datetime,
+    )
+
+    logger.info(
+        "Downloaded pressure profile %d second time window for start datetime %r and finish datetime %r.",
+        (finish_datetime - start_datetime).seconds,
+        start_datetime.isoformat(),
+        finish_datetime.isoformat(),
+    )
+
+    return df
+
+
 @app.callback(
     Output("pressure-profile-graph", "figure"),
     State("installation-select", "value"),
@@ -310,17 +328,28 @@ def plot_sensors_graph(
     Input("time-slider", "value"),
     Input("refresh-button", "n_clicks"),
 )
-@cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
 def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second, time_delta, refresh):
     if not node_id:
         node_id = None
 
-    datetime = dt.datetime.combine(
-        date=dt.date.fromisoformat(date),
-        time=dt.time(hour, minute, second + int(time_delta)),
+    initial_datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
+
+    df = get_pressure_profile_time_window(
+        installation_reference=installation_reference,
+        node_id=node_id,
+        start_datetime=initial_datetime,
+        finish_datetime=initial_datetime + dt.timedelta(seconds=60),
     )
 
-    return plot_pressure_bar_chart(installation_reference=installation_reference, node_id=node_id, datetime=datetime)
+    slider_datetime = initial_datetime + dt.timedelta(seconds=time_delta)
+
+    df = df[
+        (df["datetime"] >= slider_datetime - dt.timedelta(seconds=0.5))
+        & (df["datetime"] < slider_datetime + dt.timedelta(seconds=0.5))
+    ]
+
+    logger.debug("Filtered pressure profile time window for single datetime.")
+    return plot_pressure_bar_chart(df)
 
 
 @app.callback(

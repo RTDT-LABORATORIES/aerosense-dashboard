@@ -54,17 +54,15 @@ def plot_sensors(installation_reference, node_id, sensor_name, time_range, custo
     return (figure, data_limit_applied)
 
 
-def plot_pressure_bar_chart(installation_reference, node_id, datetime):
-    df = BigQuery().get_sensor_data_at_datetime(installation_reference, node_id, "barometer", datetime, tolerance=1)
-
+def plot_pressure_bar_chart(df):
     original_sensor_names, cleaned_sensor_names = _get_cleaned_sensor_column_names(df)
     df_transposed = df[original_sensor_names].transpose()
     df_transposed["Barometer number"] = cleaned_sensor_names
 
     if len(df) == 0:
-        df_transposed[0] = 0
-
-    df_transposed["Raw value"] = df_transposed[0]
+        df_transposed["Raw value"] = 0
+    else:
+        df_transposed["Raw value"] = df_transposed.iloc[:, 0]
 
     figure = px.line(df_transposed, x="Barometer number", y="Raw value")
     figure.add_bar(x=df_transposed["Barometer number"], y=df_transposed["Raw value"])
