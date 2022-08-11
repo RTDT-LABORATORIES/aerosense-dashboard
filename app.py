@@ -289,7 +289,7 @@ def plot_sensors_graph(
     return (figure, "")
 
 
-@cache.memoize()
+@cache.memoize(timeout=0)
 def get_pressure_profiles_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
     """Get pressure profiles for the given node during the given time window.
 
