@@ -14,6 +14,7 @@ from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
 from dashboard.queries import ROW_LIMIT, BigQuery
+from dashboard.utils import get_cleaned_sensor_column_names
 
 
 logger = logging.getLogger(__name__)
@@ -291,13 +292,14 @@ def plot_sensors_graph(
 
 @cache.memoize(timeout=0)
 def get_pressure_profiles_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
-    """Get pressure profiles for the given node during the given time window.
+    """Get pressure profiles for the given node during the given time window along with the minimum and maximum
+    pressures over all the sensors over that window.
 
     :param str installation_reference:
     :param str node_id:
     :param datetime.datetime start_datetime:
     :param datetime.datetime finish_datetime:
-    :return pandas.DataFrame:
+    :return (pandas.DataFrame, float, float): the pressure profiles, minimum pressure, and maximum pressure for the time window
     """
     df, _ = BigQuery().get_sensor_data(
         installation_reference=installation_reference,
@@ -314,7 +316,9 @@ def get_pressure_profiles_for_time_window(installation_reference, node_id, start
         finish_datetime.isoformat(),
     )
 
-    return df
+    sensor_column_names, _ = get_cleaned_sensor_column_names(df)
+    df_with_sensors_only = df[sensor_column_names]
+    return (df, df_with_sensors_only.min().min(), df_with_sensors_only.max().max())
 
 
 @app.callback(
@@ -334,7 +338,7 @@ def plot_pressure_profile_graph(installation_reference, node_id, date, hour, min
 
     initial_datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
 
-    df = get_pressure_profiles_for_time_window(
+    df, minimum, maximum = get_pressure_profiles_for_time_window(
         installation_reference=installation_reference,
         node_id=node_id,
         start_datetime=initial_datetime,
@@ -349,7 +353,7 @@ def plot_pressure_profile_graph(installation_reference, node_id, date, hour, min
     ]
 
     logger.debug("Filtered pressure profile time window for single datetime.")
-    return plot_pressure_bar_chart(df)
+    return plot_pressure_bar_chart(df, minimum, maximum)
 
 
 @app.callback(
