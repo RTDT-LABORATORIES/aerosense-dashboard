@@ -10,10 +10,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import re
 import os
+import re
 import sys
+
 import sphinx_rtd_theme
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,8 +53,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"aerosense_dashboard"
-copyright = u"The Aerosense Research Partners"
+project = "aerosense_dashboard"
+copyright = "The Aerosense Research Partners"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -197,7 +199,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "aerosense_dashboard.tex", u"aerosense_dashboard", u"OST Aerosense", "manual"),
+    ("index", "aerosense_dashboard.tex", "aerosense_dashboard", "OST Aerosense", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -225,7 +227,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [("index", "aerosense_dashboard", u"aerosense_dashboard", [u"OST Aerosense"], 1)]
+man_pages = [("index", "aerosense_dashboard", "aerosense_dashboard", ["OST Aerosense"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -240,8 +242,8 @@ texinfo_documents = [
     (
         "index",
         "aerosense_dashboard",
-        u"aerosense_dashboard",
-        u"OST Aerosense",
+        "aerosense_dashboard",
+        "OST Aerosense",
         "aerosense_dashboard",
         "High level visualisation of Aerosense data.",
         "Miscellaneous",

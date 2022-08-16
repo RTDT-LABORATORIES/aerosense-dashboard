@@ -59,6 +59,9 @@ h5 {
 .text-box {
   margin: 50px;
 }
+.warning {
+  color: red;
+}
 #text {
   padding: 50px;
   color: #506783;
