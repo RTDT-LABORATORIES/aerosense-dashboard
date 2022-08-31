@@ -1,6 +1,6 @@
 from plotly import express as px
 
-from dashboard.queries import BigQuery
+from aerosense_tools.queries import BigQuery
 from dashboard.utils import generate_time_range, get_cleaned_sensor_column_names
 
 

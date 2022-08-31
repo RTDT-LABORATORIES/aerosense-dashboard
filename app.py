@@ -7,13 +7,13 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from flask_caching import Cache
 
+from aerosense_tools.queries import ROW_LIMIT, BigQuery
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
-from dashboard.queries import ROW_LIMIT, BigQuery
 from dashboard.utils import get_cleaned_sensor_column_names
 
 
