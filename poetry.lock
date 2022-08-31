@@ -1,4 +1,26 @@
 [[package]]
+name = "aerosense-tools"
+version = "0.2.1"
+description = "Functions for working with aerosense data, useful in building dashboards, analysis notebooks and digital twin services"
+category = "main"
+optional = false
+python-versions = ">=3.8,<3.11"
+develop = false
+
+[package.dependencies]
+google-cloud-bigquery = {version = "^3.0.1", extras = ["bqstorage", "pandas"]}
+sphinx-pyproject = "^0.1.0"
+
+[package.extras]
+docs = ["Sphinx (>=4,<5)", "sphinx-rtd-theme (==1.0.0)", "sphinx-tabs (==3.2.0)", "sphinx-charts (==0.1.2)", "sphinx-math-dollar (==1.2.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/aerosense-ai/aerosense-tools.git"
+reference = "0.2.1"
+resolved_reference = "16077608e8ecbefc85d7e96155785f5e97ff338b"
+
+[[package]]
 name = "alabaster"
 version = "0.7.12"
 description = "A configurable sidebar-enabled Sphinx theme"
@@ -217,6 +239,35 @@ optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "dom-toml"
+version = "0.6.0"
+description = "Dom's tools for Tom's Obvious, Minimal Language."
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+domdf-python-tools = ">=2.8.0"
+toml = ">=0.10.2"
+
+[[package]]
+name = "domdf-python-tools"
+version = "3.3.0"
+description = "Helpful functions for Python 🐍 🛠️"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+importlib-metadata = {version = ">=3.6.0", markers = "python_version < \"3.9\""}
+natsort = ">=7.0.1"
+typing-extensions = ">=3.7.4.1"
+
+[package.extras]
+all = ["pytz (>=2019.1)"]
+dates = ["pytz (>=2019.1)"]
+
+[[package]]
 name = "filelock"
 version = "3.7.1"
 description = "A platform independent file lock."
@@ -334,7 +385,7 @@ reauth = ["pyu2f (>=0.1.5)"]
 
 [[package]]
 name = "google-cloud-bigquery"
-version = "3.3.0"
+version = "3.3.2"
 description = "Google BigQuery API client library"
 category = "main"
 optional = false
@@ -349,9 +400,9 @@ google-resumable-media = ">=0.6.0,<3.0dev"
 grpcio = ">=1.47.0,<2.0dev"
 packaging = ">=14.3,<22.0.0dev"
 pandas = {version = ">=1.0.0", optional = true, markers = "extra == \"pandas\""}
-proto-plus = ">=1.15.0,<2.0.0dev"
-protobuf = ">=3.12.0,<4.0.0dev"
-pyarrow = ">=3.0.0,<9.0dev"
+proto-plus = ">=1.22.0,<2.0.0dev"
+protobuf = ">=3.19.0,<5.0.0dev"
+pyarrow = ">=3.0.0,<10.0dev"
 python-dateutil = ">=2.7.2,<3.0dev"
 requests = ">=2.18.0,<3.0.0dev"
 
@@ -602,6 +653,18 @@ python-dateutil = ">=2.7"
 setuptools_scm = ">=4"
 
 [[package]]
+name = "natsort"
+version = "8.1.0"
+description = "Simple yet flexible natural sorting in Python."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+fast = ["fastnumbers (>=2.0.0)"]
+icu = ["PyICU (>=1.0.0)"]
+
+[[package]]
 name = "nodeenv"
 version = "1.7.0"
 description = "Node.js virtual environment builder"
@@ -714,7 +777,7 @@ virtualenv = ">=20.0.8"
 
 [[package]]
 name = "proto-plus"
-version = "1.20.6"
+version = "1.22.1"
 description = "Beautiful, Pythonic protocol buffers."
 category = "main"
 optional = false
@@ -994,6 +1057,18 @@ python-versions = "*"
 sphinx = "*"
 
 [[package]]
+name = "sphinx-pyproject"
+version = "0.1.0"
+description = "Move some of your Sphinx configuration into pyproject.toml"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+dom-toml = ">=0.3.0"
+domdf-python-tools = ">=2.7.0"
+
+[[package]]
 name = "sphinx-rtd-theme"
 version = "1.0.0"
 description = "Read the Docs theme for Sphinx"
@@ -1119,7 +1194,7 @@ python-versions = "*"
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -1252,9 +1327,10 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-tabs", "sphinx-charts", "sphinx-ma
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "2f5c58b9b3996ac9336faadd7b3375c9c035e4766096a6d3c794df1e944e2cad"
+content-hash = "56394b39f96a7d6269ccfa6b82187ac2390e971a25c39c4ed79be22ec033600a"
 
 [metadata.files]
+aerosense-tools = []
 alabaster = [
     {file = "alabaster-0.7.12-py2.py3-none-any.whl", hash = "sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359"},
     {file = "alabaster-0.7.12.tar.gz", hash = "sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02"},
@@ -1435,6 +1511,11 @@ distlib = [
 docutils = [
     {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
     {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
+]
+dom-toml = []
+domdf-python-tools = [
+    {file = "domdf_python_tools-3.3.0-py3-none-any.whl", hash = "sha256:692a33cfc4bc4270a30f18b95beb8f65bf56935d122a4bdb0af7f7760452d41c"},
+    {file = "domdf_python_tools-3.3.0.tar.gz", hash = "sha256:7c588cdfa3e8bfd9617efbb4fa42652b7010c0f158c81844c862fbda5d86d9cc"},
 ]
 filelock = [
     {file = "filelock-3.7.1-py3-none-any.whl", hash = "sha256:37def7b658813cda163b56fc564cdc75e86d338246458c4c28ae84cabefa2404"},
@@ -1735,6 +1816,10 @@ matplotlib = [
     {file = "matplotlib-3.5.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:24173c23d1bcbaed5bf47b8785d27933a1ac26a5d772200a0f3e0e38f471b001"},
     {file = "matplotlib-3.5.2.tar.gz", hash = "sha256:48cf850ce14fa18067f2d9e0d646763681948487a8080ec0af2686468b4607a2"},
 ]
+natsort = [
+    {file = "natsort-8.1.0-py3-none-any.whl", hash = "sha256:f59988d2f24e77b6b56f8a8f882d5df6b3b637e09e075abc67b486d59fba1a4b"},
+    {file = "natsort-8.1.0.tar.gz", hash = "sha256:c7c1f3f27c375719a4dfcab353909fe39f26c2032a062a8c80cc844eaaca0445"},
+]
 nodeenv = [
     {file = "nodeenv-1.7.0-py2.py3-none-any.whl", hash = "sha256:27083a7b96a25f2f5e1d8cb4b6317ee8aeda3bdd121394e5ac54e498028a042e"},
     {file = "nodeenv-1.7.0.tar.gz", hash = "sha256:e0e7f7dfb85fc5394c6fe1e8fa98131a2473e04311a45afb6508f7cf1836fa2b"},
@@ -1866,10 +1951,7 @@ pre-commit = [
     {file = "pre_commit-2.19.0-py2.py3-none-any.whl", hash = "sha256:10c62741aa5704faea2ad69cb550ca78082efe5697d6f04e5710c3c229afdd10"},
     {file = "pre_commit-2.19.0.tar.gz", hash = "sha256:4233a1e38621c87d9dda9808c6606d7e7ba0e087cd56d3fe03202a01d2919615"},
 ]
-proto-plus = [
-    {file = "proto-plus-1.20.6.tar.gz", hash = "sha256:449b4537e83f4776bd69051c4d776db8ffe3f9d0641f1e87b06c116eb94c90e9"},
-    {file = "proto_plus-1.20.6-py3-none-any.whl", hash = "sha256:c6c43c3fcfc360fdab46b47e2e9e805ff56e13169f9f2e45caf88b6b593215ab"},
-]
+proto-plus = []
 protobuf = [
     {file = "protobuf-3.20.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3cc797c9d15d7689ed507b165cd05913acb992d78b379f6014e013f9ecb20996"},
     {file = "protobuf-3.20.1-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:ff8d8fa42675249bb456f5db06c00de6c2f4c27a065955917b28c4f15978b9c3"},
@@ -2060,6 +2142,7 @@ sphinx-math-dollar = [
     {file = "sphinx-math-dollar-1.2.tar.gz", hash = "sha256:04153cdf28ecf85fc109c0676e9b8eab357394e0e5eb01378b1002251b27c2e6"},
     {file = "sphinx_math_dollar-1.2-py3-none-any.whl", hash = "sha256:6fe4fbbfddf9f5e8eab5bb044423fdff2bd9cb9cb12ec1961523d52b8622528a"},
 ]
+sphinx-pyproject = []
 sphinx-rtd-theme = [
     {file = "sphinx_rtd_theme-1.0.0-py2.py3-none-any.whl", hash = "sha256:4d35a56f4508cfee4c4fb604373ede6feae2a306731d533f409ef5c3496fdbd8"},
     {file = "sphinx_rtd_theme-1.0.0.tar.gz", hash = "sha256:eec6d497e4c2195fa0e8b2016b337532b8a699a68bcb22a512870e16925c6a5c"},
