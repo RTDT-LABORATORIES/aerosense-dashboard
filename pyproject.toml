@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "aerosense-dashboard"
-version = "0.2.0"
+version = "0.3.0"
 description = "High-level visualisation for aerosense"
 authors = ["Tom Clark", "Marcus Lugg", "Yuriy Marykovsky"]
 license = "BSD-3"
