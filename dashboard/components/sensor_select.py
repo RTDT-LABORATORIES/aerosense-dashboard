@@ -1,6 +1,6 @@
 from dash import dcc
 
-from dashboard.queries import BigQuery
+from aerosense_tools.queries import BigQuery
 
 
 def SensorSelect():
