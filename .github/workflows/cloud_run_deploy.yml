@@ -74,7 +74,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           # NOTE: If setting create_credentials_file=true, .dockerignore file must include `gha-creds-*.json` to avoid baking these credentials into build
-          create_credentials_file: false
+          create_credentials_file: true
           workload_identity_provider: "projects/885434704038/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
           service_account: "dashboard-github-actions@aerosense-twined.iam.gserviceaccount.com"
 
@@ -133,9 +133,12 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           # NOTE: If setting create_credentials_file=true, .dockerignore file must include `gha-creds-*.json` to avoid baking these credentials into build
-          create_credentials_file: false
+          create_credentials_file: true
           workload_identity_provider: "projects/885434704038/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
           service_account: "dashboard-github-actions@aerosense-twined.iam.gserviceaccount.com"
+
+      - name: Setup gcloud
+        uses: "google-github-actions/setup-gcloud@v0"
 
       - name: Setup tmate session [DEBUG]
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled == 'true'}}
@@ -147,8 +150,9 @@ jobs:
         with:
           image: ${{ needs.build.outputs.image_version_artefact }}
           region: europe-west1
-          service: aerosense-dashboard-${{ needs.build.outputs.branch_tag }}
-          tag: ${{ needs.build.outputs.short_sha }}
+          service: dashboard-${{ needs.build.outputs.branch_tag }}
+          tag: sha${{ needs.build.outputs.short_sha }}
+          flags: --service-account=dashboard@aerosense-twined.iam.gserviceaccount.com
 
       - name: Show Cloud Run Deployment URL
         run: echo "${{ steps.deploy_dashboard.outputs.url }}"
