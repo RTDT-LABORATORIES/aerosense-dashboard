@@ -1,7 +1,7 @@
 from plotly import express as px
 
 from aerosense_tools.queries import BigQuery
-from dashboard.utils import generate_time_range, get_cleaned_sensor_column_names
+from dashboard.utils import get_cleaned_sensor_column_names
 
 
 def plot_connections_statistics(installation_reference, node_id, y_axis_column, start, finish):
@@ -17,9 +17,7 @@ def plot_connections_statistics(installation_reference, node_id, y_axis_column, 
     return figure
 
 
-def plot_sensors(installation_reference, node_id, sensor_name, time_range, custom_start_date, custom_end_date):
-    start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
-
+def plot_sensors(installation_reference, node_id, sensor_name, start, finish):
     df, data_limit_applied = BigQuery().get_sensor_data(
         installation_reference,
         node_id,

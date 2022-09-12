@@ -265,20 +265,16 @@ def plot_sensors_graph(
     :param str installation_reference:
     :param str y_axis_column:
     :param str time_range:
+    :param datetime.date|None custom_start_date:
+    :param datetime.date|None custom_end_date:
     :param int refresh:
     :return plotly.graph_objs.Figure:
     """
     if not node_id:
         node_id = None
 
-    figure, data_limit_applied = plot_sensors(
-        installation_reference,
-        node_id,
-        y_axis_column,
-        time_range,
-        custom_start_date,
-        custom_end_date,
-    )
+    start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+    figure, data_limit_applied = plot_sensors(installation_reference, node_id, y_axis_column, start, finish)
 
     if data_limit_applied:
         return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
