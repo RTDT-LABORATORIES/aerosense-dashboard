@@ -18,8 +18,8 @@ docs = ["Sphinx (>=4,<5)", "sphinx-charts (==0.1.2)", "sphinx-math-dollar (==1.2
 [package.source]
 type = "git"
 url = "https://github.com/aerosense-ai/aerosense-tools.git"
-reference = "feature/add-plotting-functions"
-resolved_reference = "291c3f89194d6bd29d204a1f71bbe785f2af3ba4"
+reference = "0.3.0"
+resolved_reference = "40ed94fbfa557dcfc94d2b7460715e7653a4a7c6"
 
 [[package]]
 name = "alabaster"
@@ -1356,7 +1356,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-tabs", "sphinx-charts", "sphinx-ma
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "affe736ce226871fef778efcb82c082098eefd2cfd65d5e64440aba68c37095a"
+content-hash = "5a804273eb29a857fac755d9c09660a0f6a017dce08d28fc2ef535606dfca512"
 
 [metadata.files]
 aerosense-tools = []

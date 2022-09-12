@@ -38,7 +38,7 @@ gunicorn = "^20.1.0"
 dash = "^2.4.1"
 Flask-Caching = "^2.0.0"
 dash-daq = "^0.5.0"
-aerosense-tools = {git = "https://github.com/aerosense-ai/aerosense-tools.git", rev = "feature/add-plotting-functions"}
+aerosense-tools = {git = "https://github.com/aerosense-ai/aerosense-tools.git", rev = "0.3.0"}
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
