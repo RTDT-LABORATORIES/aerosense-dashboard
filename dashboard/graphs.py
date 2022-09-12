@@ -4,19 +4,10 @@ from aerosense_tools.queries import BigQuery
 from dashboard.utils import generate_time_range, get_cleaned_sensor_column_names
 
 
-def plot_connections_statistics(
-    installation_reference,
-    node_id,
-    y_axis_column,
-    time_range,
-    custom_start_date,
-    custom_end_date,
-):
-    start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
-
+def plot_connections_statistics(installation_reference, node_id, y_axis_column, start, finish):
     df = BigQuery().get_aggregated_connection_statistics(
-        installation_reference,
-        node_id,
+        installation_reference=installation_reference,
+        node_id=node_id,
         start=start,
         finish=finish,
     )
