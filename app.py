@@ -7,14 +7,14 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from flask_caching import Cache
 
+from aerosense_tools.plots import plot_connection_statistic, plot_pressure_bar_chart, plot_sensors
 from aerosense_tools.queries import ROW_LIMIT, BigQuery
+from aerosense_tools.utils import generate_time_range, get_cleaned_sensor_column_names
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
-from dashboard.utils import get_cleaned_sensor_column_names
 
 
 logger = logging.getLogger(__name__)
@@ -226,20 +226,24 @@ def plot_connection_statistics_graph(
     :param str installation_reference:
     :param str y_axis_column:
     :param str time_range:
+    :param datetime.date|None custom_start_date:
+    :param datetime.date|None custom_end_date:
     :param int refresh:
     :return plotly.graph_objs.Figure:
     """
     if not node_id:
         node_id = None
 
-    return plot_connections_statistics(
-        installation_reference,
-        node_id,
-        y_axis_column,
-        time_range,
-        custom_start_date,
-        custom_end_date,
+    start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+
+    df = BigQuery().get_aggregated_connection_statistics(
+        installation_reference=installation_reference,
+        node_id=node_id,
+        start=start,
+        finish=finish,
     )
+
+    return plot_connection_statistic(df, y_axis_column)
 
 
 @app.callback(
@@ -257,7 +261,7 @@ def plot_connection_statistics_graph(
 def plot_sensors_graph(
     installation_reference,
     node_id,
-    y_axis_column,
+    sensor_name,
     time_range,
     custom_start_date,
     custom_end_date,
@@ -267,22 +271,27 @@ def plot_sensors_graph(
     changed or the refresh button is clicked.
 
     :param str installation_reference:
-    :param str y_axis_column:
+    :param str sensor_name:
     :param str time_range:
+    :param datetime.date|None custom_start_date:
+    :param datetime.date|None custom_end_date:
     :param int refresh:
-    :return plotly.graph_objs.Figure:
+    :return (plotly.graph_objs.Figure, str):
     """
     if not node_id:
         node_id = None
 
-    figure, data_limit_applied = plot_sensors(
+    start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+
+    df, data_limit_applied = BigQuery().get_sensor_data(
         installation_reference,
         node_id,
-        y_axis_column,
-        time_range,
-        custom_start_date,
-        custom_end_date,
+        sensor_name,
+        start=start,
+        finish=finish,
     )
+
+    figure = plot_sensors(df)
 
     if data_limit_applied:
         return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
