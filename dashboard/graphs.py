@@ -1,31 +1,15 @@
 from plotly import express as px
 
-from aerosense_tools.queries import BigQuery
 from dashboard.utils import get_cleaned_sensor_column_names
 
 
-def plot_connections_statistics(installation_reference, node_id, y_axis_column, start, finish):
-    df = BigQuery().get_aggregated_connection_statistics(
-        installation_reference=installation_reference,
-        node_id=node_id,
-        start=start,
-        finish=finish,
-    )
-
+def plot_connections_statistics(df, y_axis_column):
     figure = px.line(df, x="datetime", y=y_axis_column)
     figure.update_layout(xaxis_title="Date/time", yaxis_title="Raw value")
     return figure
 
 
-def plot_sensors(installation_reference, node_id, sensor_name, start, finish):
-    df, data_limit_applied = BigQuery().get_sensor_data(
-        installation_reference,
-        node_id,
-        sensor_name,
-        start=start,
-        finish=finish,
-    )
-
+def plot_sensors(df):
     original_sensor_names, cleaned_sensor_names = get_cleaned_sensor_column_names(df)
 
     df.rename(
@@ -38,7 +22,7 @@ def plot_sensors(installation_reference, node_id, sensor_name, start, finish):
 
     figure = px.line(df, x="datetime", y=cleaned_sensor_names)
     figure.update_layout(xaxis_title="Date/time", yaxis_title="Raw value")
-    return (figure, data_limit_applied)
+    return figure
 
 
 def plot_pressure_bar_chart(df, minimum, maximum):

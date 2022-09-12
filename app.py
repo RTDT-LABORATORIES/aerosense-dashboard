@@ -235,7 +235,15 @@ def plot_connection_statistics_graph(
         node_id = None
 
     start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
-    return plot_connections_statistics(installation_reference, node_id, y_axis_column, start, finish)
+
+    df = BigQuery().get_aggregated_connection_statistics(
+        installation_reference=installation_reference,
+        node_id=node_id,
+        start=start,
+        finish=finish,
+    )
+
+    return plot_connections_statistics(df, y_axis_column)
 
 
 @app.callback(
@@ -253,7 +261,7 @@ def plot_connection_statistics_graph(
 def plot_sensors_graph(
     installation_reference,
     node_id,
-    y_axis_column,
+    sensor_name,
     time_range,
     custom_start_date,
     custom_end_date,
@@ -263,18 +271,27 @@ def plot_sensors_graph(
     changed or the refresh button is clicked.
 
     :param str installation_reference:
-    :param str y_axis_column:
+    :param str sensor_name:
     :param str time_range:
     :param datetime.date|None custom_start_date:
     :param datetime.date|None custom_end_date:
     :param int refresh:
-    :return plotly.graph_objs.Figure:
+    :return (plotly.graph_objs.Figure, str):
     """
     if not node_id:
         node_id = None
 
     start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
-    figure, data_limit_applied = plot_sensors(installation_reference, node_id, y_axis_column, start, finish)
+
+    df, data_limit_applied = BigQuery().get_sensor_data(
+        installation_reference,
+        node_id,
+        sensor_name,
+        start=start,
+        finish=finish,
+    )
+
+    figure = plot_sensors(df)
 
     if data_limit_applied:
         return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
