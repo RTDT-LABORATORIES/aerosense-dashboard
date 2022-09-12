@@ -1,6 +1,6 @@
 from dash import dcc
 
-from dashboard.utils import TIME_RANGE_OPTIONS
+from aerosense_tools.utils import TIME_RANGE_OPTIONS
 
 
 def TimeRangeSelect():
