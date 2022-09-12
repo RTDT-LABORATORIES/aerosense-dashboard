@@ -13,7 +13,7 @@ from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
-from dashboard.graphs import plot_connections_statistics, plot_pressure_bar_chart, plot_sensors
+from dashboard.graphs import plot_connection_statistic, plot_pressure_bar_chart, plot_sensors
 from dashboard.utils import generate_time_range, get_cleaned_sensor_column_names
 
 
@@ -243,7 +243,7 @@ def plot_connection_statistics_graph(
         finish=finish,
     )
 
-    return plot_connections_statistics(df, y_axis_column)
+    return plot_connection_statistic(df, y_axis_column)
 
 
 @app.callback(
