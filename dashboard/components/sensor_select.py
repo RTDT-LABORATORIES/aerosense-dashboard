@@ -3,7 +3,7 @@ from dash import dcc
 from aerosense_tools.queries import BigQuery
 
 
-EXCLUDED_SENSORS = {"microphone", "information_sensors", "battery_info"}
+EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
 
 
 def SensorSelect():
