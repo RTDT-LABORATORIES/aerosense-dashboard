@@ -11,13 +11,14 @@ from aerosense_tools.utils import generate_time_range, get_cleaned_sensor_column
 logger = logging.getLogger(__name__)
 
 
-def register_callbacks(app, cache, cache_timeout, tabs):
+def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
     """Register the dashboards callbacks with the app.
 
     :param dash.Dash app:
     :param flask_caching.Cache cache:
     :param int|float cache_timeout:
     :param dict tabs:
+    :param dict sensor_types:
     :return None:
     """
 
@@ -67,7 +68,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
                 finish=finish,
             )
 
-            figure = plot_sensors(df)
+            figure = plot_sensors(df, line_descriptions=sensor_types[y_axis_column]["variable"])
 
         else:
             df = BigQuery().get_aggregated_connection_statistics(
@@ -130,7 +131,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
             finish=finish,
         )
 
-        figure = plot_sensors(df)
+        figure = plot_sensors(df, line_descriptions=sensor_types[sensor_name]["variable"])
 
         if data_limit_applied:
             return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")

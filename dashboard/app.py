@@ -3,6 +3,7 @@ import dash_daq as daq
 from dash import dcc, html
 from flask_caching import Cache
 
+from aerosense_tools.queries import BigQuery
 from dashboard.callbacks import register_callbacks
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
@@ -10,6 +11,9 @@ from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 
+
+SENSOR_TYPES = BigQuery().get_sensor_types()
+EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
 
 app = dash.Dash(
     name=__name__,
@@ -90,7 +94,7 @@ tabs = {
                         html.Br(),
                         html.Label(html.B("Graph")),
                         html.Label("Sensor"),
-                        SensorSelect(excluded_sensors={"microphone", "connection_statistics", "battery_info"}),
+                        SensorSelect([sensor for sensor in SENSOR_TYPES if sensor not in EXCLUDED_SENSORS]),
                         html.Label("Time range"),
                         TimeRangeSelect(),
                         html.Label("Custom date"),
@@ -196,7 +200,13 @@ app.layout = html.Div(
     style={"height": "100vh"},
 )
 
-register_callbacks(app, cache=cache, cache_timeout=CACHE_TIMEOUT, tabs=tabs)
+register_callbacks(
+    app,
+    cache=cache,
+    cache_timeout=CACHE_TIMEOUT,
+    tabs=tabs,
+    sensor_types=SENSOR_TYPES,
+)
 
 
 # Run the Dash app
