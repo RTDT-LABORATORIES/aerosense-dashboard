@@ -33,11 +33,11 @@ CACHE_TIMEOUT = 3600
 cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 
 tabs = {
-    "connection_statistics": [
+    "information_sensors": [
         html.Div(
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Nav(selected_tab="connection_statistics"),
+                Nav(selected_tab="information_sensors"),
                 html.Br(),
                 html.Div(
                     [
@@ -48,7 +48,7 @@ tabs = {
                         NodeSelect(),
                         html.Br(),
                         html.Label(html.B("Graph")),
-                        html.Label("Connection statistic"),
+                        html.Label("Information sensor"),
                         YAxisSelect(),
                         html.Label("Time range"),
                         TimeRangeSelect(),
@@ -78,7 +78,7 @@ tabs = {
                     ],
                     className="text-box",
                 ),
-                dcc.Graph(id="connection-statistics-graph", style={"margin": "0px 20px", "height": "45vh"}),
+                dcc.Graph(id="information-sensors-graph", style={"margin": "0px 20px", "height": "45vh"}),
             ],
             className="eight columns",
         ),
@@ -200,14 +200,14 @@ tabs = {
 }
 
 app.layout = html.Div(
-    [html.Div(tabs["connection_statistics"], id="app")],
+    [html.Div(tabs["information_sensors"], id="app")],
     className="row flex-display",
     style={"height": "100vh"},
 )
 
 
 @app.callback(
-    Output("connection-statistics-graph", "figure"),
+    Output("information-sensors-graph", "figure"),
     State("installation-select", "value"),
     State("node-select", "value"),
     State("y-axis-select", "value"),
@@ -217,7 +217,7 @@ app.layout = html.Div(
     Input("refresh-button", "n_clicks"),
 )
 @cache.memoize(timeout=CACHE_TIMEOUT, args_to_ignore=["refresh"])
-def plot_connection_statistics_graph(
+def plot_information_sensors_graph(
     installation_reference,
     node_id,
     y_axis_column,
@@ -226,7 +226,7 @@ def plot_connection_statistics_graph(
     custom_end_date,
     refresh,
 ):
-    """Plot a graph of the connection statistics for the given installation, y-axis column, and time range when these
+    """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
     values are changed or the refresh button is clicked.
 
     :param str installation_reference:
