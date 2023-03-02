@@ -65,6 +65,7 @@ tabs = {
                 html.Div(
                     [
                         html.H3(id="graph-title"),
+                        dcc.Markdown(id="information-sensor-data-limit-warning", className="warning"),
                     ],
                     className="text-box",
                 ),
@@ -115,7 +116,7 @@ tabs = {
                 html.Div(
                     [
                         html.H3(id="graph-title"),
-                        dcc.Markdown(id="data-limit-warning", className="warning"),
+                        dcc.Markdown(id="sensor-data-limit-warning", className="warning"),
                     ],
                     className="text-box",
                 ),

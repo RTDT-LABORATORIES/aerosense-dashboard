@@ -23,6 +23,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
 
     @app.callback(
         Output("information-sensors-graph", "figure"),
+        Output("information-sensor-data-limit-warning", "children"),
         State("installation-select", "value"),
         State("node-select", "value"),
         State("y-axis-select", "value"),
@@ -50,7 +51,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
         :param datetime.date|None custom_start_date:
         :param datetime.date|None custom_end_date:
         :param int refresh:
-        :return plotly.graph_objs.Figure:
+        :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
@@ -58,7 +59,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
         start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
 
         if y_axis_column == "battery_info":
-            df, _ = BigQuery().get_sensor_data(
+            df, data_limit_applied = BigQuery().get_sensor_data(
                 installation_reference,
                 node_id,
                 y_axis_column,
@@ -66,20 +67,27 @@ def register_callbacks(app, cache, cache_timeout, tabs):
                 finish=finish,
             )
 
-            return plot_sensors(df)
+            figure = plot_sensors(df)
 
-        df = BigQuery().get_aggregated_connection_statistics(
-            installation_reference=installation_reference,
-            node_id=node_id,
-            start=start,
-            finish=finish,
-        )
+        else:
+            df = BigQuery().get_aggregated_connection_statistics(
+                installation_reference=installation_reference,
+                node_id=node_id,
+                start=start,
+                finish=finish,
+            )
 
-        return plot_connection_statistic(df, y_axis_column)
+            data_limit_applied = ""
+            figure = plot_connection_statistic(df, y_axis_column)
+
+        if data_limit_applied:
+            return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
+
+        return (figure, [])
 
     @app.callback(
         Output("sensors-graph", "figure"),
-        Output("data-limit-warning", "children"),
+        Output("sensor-data-limit-warning", "children"),
         State("installation-select", "value"),
         State("node-select", "value"),
         State("y-axis-select", "value"),
@@ -127,7 +135,7 @@ def register_callbacks(app, cache, cache_timeout, tabs):
         if data_limit_applied:
             return (figure, f"Large amount of data - the query has been limited to the latest {ROW_LIMIT} datapoints.")
 
-        return (figure, "")
+        return (figure, [])
 
     @cache.memoize(timeout=0)
     def get_pressure_profiles_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
