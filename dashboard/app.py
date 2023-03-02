@@ -90,7 +90,7 @@ tabs = {
                         html.Br(),
                         html.Label(html.B("Graph")),
                         html.Label("Sensor"),
-                        SensorSelect(),
+                        SensorSelect(excluded_sensors={"microphone", "connection_statistics", "battery_info"}),
                         html.Label("Time range"),
                         TimeRangeSelect(),
                         html.Label("Custom date"),

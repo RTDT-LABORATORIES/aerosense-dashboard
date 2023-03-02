@@ -3,11 +3,9 @@ from dash import dcc
 from aerosense_tools.queries import BigQuery
 
 
-EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
-
-
-def SensorSelect():
-    sensor_types = [sensor for sensor in BigQuery().get_sensor_types() if sensor["name"] not in EXCLUDED_SENSORS]
+def SensorSelect(excluded_sensors=None):
+    excluded_sensors = excluded_sensors or []
+    sensor_types = [sensor for sensor in BigQuery().get_sensor_types() if sensor["name"] not in excluded_sensors]
     sensor_names = [sensor["name"] for sensor in sensor_types]
 
     return dcc.Dropdown(
