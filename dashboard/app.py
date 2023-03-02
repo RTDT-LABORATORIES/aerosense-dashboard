@@ -1,5 +1,6 @@
 import datetime as dt
 import logging
+import sys
 
 import dash
 import dash_daq as daq
@@ -18,9 +19,14 @@ from dashboard.components.y_axis_select import YAxisSelect
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
-app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}])
-app.title = "Aerosense Dashboard"
+app = dash.Dash(
+    name=__name__,
+    assets_folder="../assets",
+    title="Aerosense Dashboard",
+    meta_tags=[{"name": "viewport", "content": "width=device-width"}],
+)
 app.config.suppress_callback_exceptions = True
 
 CACHE_TIMEOUT = 3600
