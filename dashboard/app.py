@@ -1,6 +1,3 @@
-import logging
-import sys
-
 import dash
 import dash_daq as daq
 from dash import dcc, html
@@ -13,9 +10,6 @@ from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 from dashboard.components.y_axis_select import YAxisSelect
 
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 app = dash.Dash(
     name=__name__,
