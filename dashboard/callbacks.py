@@ -57,6 +57,17 @@ def register_callbacks(app, cache, cache_timeout, tabs):
 
         start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
 
+        if y_axis_column == "battery_info":
+            df, _ = BigQuery().get_sensor_data(
+                installation_reference,
+                node_id,
+                y_axis_column,
+                start=start,
+                finish=finish,
+            )
+
+            return plot_sensors(df)
+
         df = BigQuery().get_aggregated_connection_statistics(
             installation_reference=installation_reference,
             node_id=node_id,

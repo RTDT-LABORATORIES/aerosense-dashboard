@@ -7,7 +7,7 @@ def SensorSelect():
     sensor_types = [
         sensor_type
         for sensor_type in BigQuery().get_sensor_types()
-        if sensor_type not in {"microphone", "information_sensors"}
+        if sensor_type not in {"microphone", "information_sensors", "battery_info"}
     ]
 
     return dcc.Dropdown(
