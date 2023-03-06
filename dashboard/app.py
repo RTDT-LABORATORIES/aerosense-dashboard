@@ -23,8 +23,10 @@ app = dash.Dash(
 )
 app.config.suppress_callback_exceptions = True
 
+server = app.server
+
 CACHE_TIMEOUT = 3600
-cache = Cache(app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
+cache = Cache(server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 
 tabs = {
     "information_sensors": [
