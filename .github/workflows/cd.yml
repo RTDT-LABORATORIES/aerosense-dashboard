@@ -51,7 +51,7 @@ jobs:
         with:
           gcp_project_name: aerosense-twined
           gcp_project_number: 885434704038
-          gcp_region: europe-west1
+          gcp_region: europe-west6
           gcp_resource_affix: aerosense
           gcp_service_name: dashboard
           gcp_environment: main
