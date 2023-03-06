@@ -145,7 +145,7 @@ jobs:
           region: ${{ needs.info.outputs.gcp_region }}
           service: ${{ needs.info.outputs.gcp_resource_affix }}-${{ needs.info.outputs.gcp_service_name }}-${{ needs.info.outputs.branch_tag_kebab }}
           tag: sha${{ needs.info.outputs.short_sha }}
-          flags: --service-account=dashboard@{{ needs.info.outputs.gcp_project_name }}.iam.gserviceaccount.com
+          flags: --service-account=dashboard@${{ needs.info.outputs.gcp_project_name }}.iam.gserviceaccount.com
 
       - name: Show Cloud Run Deployment URL
         run: echo "${{ steps.deploy_dashboard.outputs.url }}"
