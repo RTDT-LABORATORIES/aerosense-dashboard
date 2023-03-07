@@ -5,7 +5,7 @@ from flask_caching import Cache
 
 from aerosense_tools.queries import BigQuery
 from dashboard.callbacks import register_callbacks
-from dashboard.components import About, InstallationSelect, Logo, Nav, Title
+from dashboard.components import About, InstallationSelect, Logo, Navigation, Title
 from dashboard.components.node_select import NodeSelect
 from dashboard.layouts import create_sensors_tab_layout
 
@@ -45,7 +45,7 @@ tabs = {
         html.Div(
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Nav(selected_tab="pressure_profile"),
+                Navigation(selected_tab="pressure_profile"),
                 html.Br(),
                 html.Div(
                     [

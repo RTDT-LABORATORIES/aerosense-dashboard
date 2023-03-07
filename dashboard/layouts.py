@@ -1,6 +1,6 @@
 from dash import dcc, html
 
-from dashboard.components import About, InstallationSelect, Logo, Nav, Title
+from dashboard.components import About, InstallationSelect, Logo, Navigation, Title
 from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
@@ -20,7 +20,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
         html.Div(
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Nav(selected_tab=tab_name),
+                Navigation(selected_tab=tab_name),
                 html.Br(),
                 html.Div(
                     [

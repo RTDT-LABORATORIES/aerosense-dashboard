@@ -1,7 +1,7 @@
 from dash import dcc, html
 
 
-def Nav(selected_tab="information_sensors"):
+def Navigation(selected_tab="information_sensors"):
     return html.Div(
         dcc.Tabs(
             id="nav-tabs",
