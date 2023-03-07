@@ -1,3 +1,5 @@
+import logging
+
 import dash
 from dash import html
 from flask_caching import Cache
@@ -7,7 +9,6 @@ from dashboard.callbacks import register_callbacks
 from dashboard.layouts import create_pressure_profile_tab_layout, create_sensors_tab_layout
 
 
-SENSOR_TYPES = BigQuery().get_sensor_types()
 EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
 CACHE_TIMEOUT = 3600
 
@@ -18,9 +19,12 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
 )
 app.config.suppress_callback_exceptions = True
+app.logger.setLevel(logging.DEBUG)
 
 server = app.server
 cache = Cache(server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
+
+SENSOR_TYPES = cache.memoize(timeout=CACHE_TIMEOUT)(BigQuery().get_sensor_types)()
 
 tabs = {
     "information_sensors": create_sensors_tab_layout(
