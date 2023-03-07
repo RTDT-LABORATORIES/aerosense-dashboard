@@ -7,7 +7,7 @@ from aerosense_tools.queries import BigQuery
 from dashboard.callbacks import register_callbacks
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
-from dashboard.tabs import create_sensors_tab_layout
+from dashboard.layouts import create_sensors_tab_layout
 
 
 SENSOR_TYPES = BigQuery().get_sensor_types()
