@@ -259,6 +259,9 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             Output("custom-time-range-select", "disabled"),
             Output("custom-time-range-select", "start_date"),
             Output("custom-time-range-select", "end_date"),
+            Output("sensor-hour", "disabled"),
+            Output("sensor-minute", "disabled"),
+            Output("sensor-second", "disabled"),
         ],
         [
             Input("time-range-select", "value"),
@@ -270,7 +273,8 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str time_range:
         :return bool:
         """
-        return (time_range != "Custom", None, None)
+        disabled = time_range != "Custom"
+        return (disabled, None, None, disabled, disabled, disabled)
 
     @app.callback(
         Output("app", "children"),
