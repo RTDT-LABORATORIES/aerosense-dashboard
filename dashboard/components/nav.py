@@ -15,14 +15,3 @@ def Nav(selected_tab="information_sensors"):
         ),
         className="sidebar-content",
     )
-
-
-"""
-WHAT YURIY WANTS
-He wants with priority
-- a dropdown of installations
-- dropdown list of sensors available for a given installation
-- a button that says "plot last minute of data" (or live view)
-The rest
-- aerofoil plot component
-"""

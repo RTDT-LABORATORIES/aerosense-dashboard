@@ -7,8 +7,7 @@ from aerosense_tools.queries import BigQuery
 from dashboard.callbacks import register_callbacks
 from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
-from dashboard.components.sensor_select import SensorSelect
-from dashboard.components.time_range_select import TimeRangeSelect
+from dashboard.tabs import create_sensors_tab_layout
 
 
 SENSOR_TYPES = BigQuery().get_sensor_types()
@@ -28,110 +27,20 @@ CACHE_TIMEOUT = 3600
 cache = Cache(server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 
 tabs = {
-    "information_sensors": [
-        html.Div(
-            [
-                html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Nav(selected_tab="information_sensors"),
-                html.Br(),
-                html.Div(
-                    [
-                        html.Label(html.B("Installation")),
-                        html.Label("Installation reference"),
-                        InstallationSelect(),
-                        html.Label("Node id"),
-                        NodeSelect(),
-                        html.Br(),
-                        html.Label(html.B("Graph")),
-                        html.Label("Information sensor"),
-                        SensorSelect(
-                            ["tx_power", "filtered_rssi", "raw_rssi", "allocated_heap_memory", "battery_info"]
-                        ),
-                        html.Label("Time range"),
-                        TimeRangeSelect(),
-                        html.Label("Custom date"),
-                        dcc.DatePickerRange(
-                            id="custom-time-range-select",
-                            display_format="Do MMM Y",
-                            persistence=True,
-                            disabled=True,
-                        ),
-                        html.Br(),
-                        html.Br(),
-                        html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
-                    ],
-                    id="buttons-section",
-                    className="sidebar-content",
-                ),
-            ],
-            className="four columns sidebar",
-        ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H3(id="graph-title"),
-                        dcc.Markdown(id="information-sensor-data-limit-warning", className="warning"),
-                    ],
-                    className="text-box",
-                ),
-                dcc.Graph(id="information-sensors-graph", style={"margin": "0px 20px", "height": "45vh"}),
-            ],
-            className="eight columns",
-        ),
-    ],
-    "sensors": [
-        html.Div(
-            [
-                html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Nav(selected_tab="sensors"),
-                html.Br(),
-                html.Div(
-                    [
-                        html.Label(html.B("Installation")),
-                        html.Label("Installation reference"),
-                        InstallationSelect(),
-                        html.Label("Node id"),
-                        NodeSelect(),
-                        html.Br(),
-                        html.Label(html.B("Graph")),
-                        html.Label("Sensor"),
-                        SensorSelect([sensor for sensor in SENSOR_TYPES if sensor not in EXCLUDED_SENSORS]),
-                        html.Label("Time range"),
-                        TimeRangeSelect(),
-                        html.Label("Custom date"),
-                        dcc.DatePickerRange(
-                            id="custom-time-range-select",
-                            display_format="Do MMM Y",
-                            persistence=True,
-                            disabled=True,
-                        ),
-                        html.Br(),
-                        html.Br(),
-                        html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
-                    ],
-                    id="buttons-section",
-                    className="sidebar-content",
-                ),
-            ],
-            className="four columns sidebar",
-        ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H3(id="graph-title"),
-                        dcc.Markdown(id="sensor-data-limit-warning", className="warning"),
-                    ],
-                    className="text-box",
-                ),
-                dcc.Graph(id="sensors-graph", style={"margin": "0px 20px", "height": "45vh"}),
-            ],
-            className="eight columns",
-        ),
-    ],
+    "information_sensors": create_sensors_tab_layout(
+        app,
+        tab_name="information_sensors",
+        sensor_names=["tx_power", "filtered_rssi", "raw_rssi", "allocated_heap_memory", "battery_info"],
+        graph_id="information-sensors-graph",
+        data_limit_warning_id="information-sensor-data-limit-warning",
+    ),
+    "sensors": create_sensors_tab_layout(
+        app,
+        tab_name="sensors",
+        sensor_names=[sensor for sensor in SENSOR_TYPES if sensor not in EXCLUDED_SENSORS],
+        graph_id="sensors-graph",
+        data_limit_warning_id="sensor-data-limit-warning",
+    ),
     "pressure_profile": [
         html.Div(
             [
