@@ -9,6 +9,7 @@ from dashboard.layouts import create_pressure_profile_tab_layout, create_sensors
 
 SENSOR_TYPES = BigQuery().get_sensor_types()
 EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
+CACHE_TIMEOUT = 3600
 
 app = dash.Dash(
     name=__name__,
@@ -19,8 +20,6 @@ app = dash.Dash(
 app.config.suppress_callback_exceptions = True
 
 server = app.server
-
-CACHE_TIMEOUT = 3600
 cache = Cache(server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": ".dashboard_cache"})
 
 tabs = {
@@ -47,13 +46,7 @@ app.layout = html.Div(
     style={"height": "100vh"},
 )
 
-register_callbacks(
-    app,
-    cache=cache,
-    cache_timeout=CACHE_TIMEOUT,
-    tabs=tabs,
-    sensor_types=SENSOR_TYPES,
-)
+register_callbacks(app, cache=cache, cache_timeout=CACHE_TIMEOUT, tabs=tabs, sensor_types=SENSOR_TYPES)
 
 
 # Run the Dash app
