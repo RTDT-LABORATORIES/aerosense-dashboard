@@ -38,7 +38,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         TimeRangeSelect(),
                         html.Br(),
                         html.Label(html.B("Custom time range")),
-                        html.Label("Start date"),
+                        html.Label("Start datetime"),
                         dcc.DatePickerSingle(
                             id="start-date",
                             display_format="Do MMM Y",
@@ -54,7 +54,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         dash_daq.NumericInput(id="start-second", value=0, min=0, max=59, persistence=True),
                         html.Br(),
                         html.Br(),
-                        html.Label("End date"),
+                        html.Label("End datetime"),
                         dcc.DatePickerSingle(
                             id="end-date",
                             display_format="Do MMM Y",

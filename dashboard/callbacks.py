@@ -1,3 +1,4 @@
+import datetime
 import datetime as dt
 import logging
 
@@ -30,7 +31,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
         State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
         State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
@@ -40,7 +47,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         y_axis_column,
         time_range,
         custom_start_date,
+        start_hour,
+        start_minute,
+        start_second,
         custom_end_date,
+        end_hour,
+        end_minute,
+        end_second,
         refresh,
     ):
         """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
@@ -49,15 +62,30 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str installation_reference:
         :param str y_axis_column:
         :param str time_range:
-        :param datetime.date|None custom_start_date:
-        :param datetime.date|None custom_end_date:
+        :param str|None custom_start_date:
+        :param str|None custom_end_date:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+        if custom_start_date:
+            custom_start = datetime.datetime.combine(
+                dt.date.fromisoformat(custom_start_date),
+                datetime.time(hour=start_hour, minute=start_minute, second=start_second),
+            )
+
+            custom_end = datetime.datetime.combine(
+                dt.date.fromisoformat(custom_end_date),
+                datetime.time(hour=end_hour, minute=end_minute, second=end_second),
+            )
+
+        else:
+            custom_start = None
+            custom_end = None
+
+        start, finish = generate_time_range(time_range, custom_start, custom_end)
 
         if y_axis_column == "battery_info":
             df, data_limit_applied = BigQuery().get_sensor_data(
