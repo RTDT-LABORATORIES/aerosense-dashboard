@@ -9,7 +9,6 @@ from dashboard.components import About, InstallationSelect, Logo, Nav, Title
 from dashboard.components.node_select import NodeSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
-from dashboard.components.y_axis_select import YAxisSelect
 
 
 SENSOR_TYPES = BigQuery().get_sensor_types()
@@ -45,7 +44,9 @@ tabs = {
                         html.Br(),
                         html.Label(html.B("Graph")),
                         html.Label("Information sensor"),
-                        YAxisSelect(),
+                        SensorSelect(
+                            ["tx_power", "filtered_rssi", "raw_rssi", "allocated_heap_memory", "battery_info"]
+                        ),
                         html.Label("Time range"),
                         TimeRangeSelect(),
                         html.Label("Custom date"),
