@@ -87,7 +87,11 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                     ],
                     className="text-box",
                 ),
-                dcc.Graph(id=graph_id, style={"margin": "0px 20px", "height": "45vh"}),
+                dcc.Loading(
+                    [
+                        dcc.Graph(id=graph_id, style={"margin": "0px 20px", "height": "45vh"}),
+                    ],
+                ),
             ],
             className="eight columns",
         ),
@@ -158,7 +162,11 @@ def create_pressure_profile_tab_layout(app):
                     ],
                     className="text-box",
                 ),
-                dcc.Graph(id="pressure-profile-graph", style={"margin": "0px 20px", "height": "45vh"}),
+                dcc.Loading(
+                    [
+                        dcc.Graph(id="pressure-profile-graph", style={"margin": "0px 20px", "height": "45vh"}),
+                    ],
+                ),
             ],
             className="eight columns",
         ),
