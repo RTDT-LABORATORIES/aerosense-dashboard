@@ -60,30 +60,33 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         values are changed or the refresh button is clicked.
 
         :param str installation_reference:
+        :param str node_id:
         :param str y_axis_column:
         :param str time_range:
         :param str|None custom_start_date:
+        :param int|float start_hour:
+        :param int|float start_minute:
+        :param int|float start_second:
         :param str|None custom_end_date:
+        :param int|float end_hour:
+        :param int|float end_minute:
+        :param int|float end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        if custom_start_date:
-            custom_start = datetime.datetime.combine(
-                dt.date.fromisoformat(custom_start_date),
-                datetime.time(hour=start_hour, minute=start_minute, second=start_second),
-            )
-
-            custom_end = datetime.datetime.combine(
-                dt.date.fromisoformat(custom_end_date),
-                datetime.time(hour=end_hour, minute=end_minute, second=end_second),
-            )
-
-        else:
-            custom_start = None
-            custom_end = None
+        custom_start, custom_end = _combine_dates_and_times(
+            custom_start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            custom_end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
 
         start, finish = generate_time_range(time_range, custom_start, custom_end)
 
@@ -132,24 +135,48 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         sensor_name,
         time_range,
         custom_start_date,
+        start_hour,
+        start_minute,
+        start_second,
         custom_end_date,
+        end_hour,
+        end_minute,
+        end_second,
         refresh,
     ):
         """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
         changed or the refresh button is clicked.
 
         :param str installation_reference:
+        :param str node_id:
         :param str sensor_name:
         :param str time_range:
-        :param datetime.date|None custom_start_date:
-        :param datetime.date|None custom_end_date:
+        :param str|None custom_start_date:
+        :param int|float start_hour:
+        :param int|float start_minute:
+        :param int|float start_second:
+        :param str|None custom_end_date:
+        :param int|float end_hour:
+        :param int|float end_minute:
+        :param int|float end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+        custom_start, custom_end = _combine_dates_and_times(
+            custom_start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            custom_end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
+
+        start, finish = generate_time_range(time_range, custom_start, custom_end)
 
         df, data_limit_applied = BigQuery().get_sensor_data(
             installation_reference,
@@ -319,3 +346,41 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :return list:
         """
         return tabs[section_name]
+
+
+def _combine_dates_and_times(
+    start_date,
+    start_hour,
+    start_minute,
+    start_second,
+    end_date,
+    end_hour,
+    end_minute,
+    end_second,
+):
+    """If all inputs are given, combine the start inputs into a start datetime and the end inputs into an end datetime.
+
+    :param str|None start_date:
+    :param int|float start_hour:
+    :param int|float start_minute:
+    :param int|float start_second:
+    :param str|None end_date:
+    :param int|float end_hour:
+    :param int|float end_minute:
+    :param int|float end_second:
+    :return (datetime.datetime, datetime.datetime):
+    """
+    if start_date:
+        start = datetime.datetime.combine(
+            dt.date.fromisoformat(start_date),
+            datetime.time(hour=start_hour, minute=start_minute, second=start_second),
+        )
+
+        end = datetime.datetime.combine(
+            dt.date.fromisoformat(end_date),
+            datetime.time(hour=end_hour, minute=end_minute, second=end_second),
+        )
+
+        return (start, end)
+
+    return (None, None)
