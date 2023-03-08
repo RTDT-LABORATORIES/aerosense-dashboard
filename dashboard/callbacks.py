@@ -125,7 +125,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
         State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
         State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
