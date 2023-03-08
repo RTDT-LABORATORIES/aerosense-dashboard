@@ -43,6 +43,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         html.Label("Start datetime"),
                         dcc.DatePickerSingle(
                             id="start-date",
+                            date=datetime.datetime.now().date().isoformat(),
                             display_format="Do MMM Y",
                             persistence=True,
                             disabled=True,

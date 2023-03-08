@@ -377,7 +377,10 @@ def _combine_dates_and_times(
     :param int|None end_second:
     :return (datetime.datetime, datetime.datetime)|(None, None):
     """
-    if start_date:
+    if all(
+        argument is not None
+        for argument in (start_date, start_hour, start_minute, start_second, end_date, end_hour, end_minute, end_second)
+    ):
         start = datetime.datetime.combine(
             dt.date.fromisoformat(start_date),
             datetime.time(hour=start_hour, minute=start_minute, second=start_second),
