@@ -1,3 +1,5 @@
+import datetime
+
 import dash_daq
 from dash import dcc, html
 
@@ -122,6 +124,7 @@ def create_pressure_profile_tab_layout(app):
                         html.Label("Date"),
                         dcc.DatePickerSingle(
                             id="date-select",
+                            date=datetime.datetime.now().date().isoformat(),
                             display_format="Do MMM Y",
                             persistence=True,
                         ),
