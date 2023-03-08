@@ -64,13 +64,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str y_axis_column:
         :param str time_range:
         :param str|None custom_start_date:
-        :param int|float custom_start_hour:
-        :param int|float custom_start_minute:
-        :param int|float custom_start_second:
+        :param int|None custom_start_hour:
+        :param int|None custom_start_minute:
+        :param int|None custom_start_second:
         :param str|None custom_end_date:
-        :param int|float custom_end_hour:
-        :param int|float custom_end_minute:
-        :param int|float custom_end_second:
+        :param int|None custom_end_hour:
+        :param int|None custom_end_minute:
+        :param int|None custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
@@ -158,13 +158,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str sensor_name:
         :param str time_range:
         :param str|None custom_start_date:
-        :param int|float custom_start_hour:
-        :param int|float custom_start_minute:
-        :param int|float custom_start_second:
+        :param int|None custom_start_hour:
+        :param int|None custom_start_minute:
+        :param int|None custom_start_second:
         :param str|None custom_end_date:
-        :param int|float custom_end_hour:
-        :param int|float custom_end_minute:
-        :param int|float custom_end_second:
+        :param int|None custom_end_hour:
+        :param int|None custom_end_minute:
+        :param int|None custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
@@ -364,17 +364,18 @@ def _combine_dates_and_times(
     end_minute,
     end_second,
 ):
-    """If all inputs are given, combine the start inputs into a start datetime and the end inputs into an end datetime.
+    """If all inputs are given, combine the start inputs into a start datetime and the end inputs into an end datetime;
+    otherwise, return `None` as the start and end datetimes.
 
     :param str|None start_date:
-    :param int|float start_hour:
-    :param int|float start_minute:
-    :param int|float start_second:
+    :param int|None start_hour:
+    :param int|None start_minute:
+    :param int|None start_second:
     :param str|None end_date:
-    :param int|float end_hour:
-    :param int|float end_minute:
-    :param int|float end_second:
-    :return (datetime.datetime, datetime.datetime):
+    :param int|None end_hour:
+    :param int|None end_minute:
+    :param int|None end_second:
+    :return (datetime.datetime, datetime.datetime)|(None, None):
     """
     if start_date:
         start = datetime.datetime.combine(
