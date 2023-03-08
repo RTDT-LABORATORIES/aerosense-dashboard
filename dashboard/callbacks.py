@@ -1,3 +1,4 @@
+import datetime
 import datetime as dt
 import logging
 
@@ -29,8 +30,14 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
-        State("custom-time-range-select", "start_date"),
-        State("custom-time-range-select", "end_date"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
@@ -40,24 +47,48 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         y_axis_column,
         time_range,
         custom_start_date,
+        custom_start_hour,
+        custom_start_minute,
+        custom_start_second,
         custom_end_date,
+        custom_end_hour,
+        custom_end_minute,
+        custom_end_second,
         refresh,
     ):
         """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
         values are changed or the refresh button is clicked.
 
         :param str installation_reference:
+        :param str node_id:
         :param str y_axis_column:
         :param str time_range:
-        :param datetime.date|None custom_start_date:
-        :param datetime.date|None custom_end_date:
+        :param str|None custom_start_date:
+        :param int|None custom_start_hour:
+        :param int|None custom_start_minute:
+        :param int|None custom_start_second:
+        :param str|None custom_end_date:
+        :param int|None custom_end_hour:
+        :param int|None custom_end_minute:
+        :param int|None custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+        custom_start, custom_end = _combine_dates_and_times(
+            custom_start_date,
+            custom_start_hour,
+            custom_start_minute,
+            custom_start_second,
+            custom_end_date,
+            custom_end_hour,
+            custom_end_minute,
+            custom_end_second,
+        )
+
+        start, finish = generate_time_range(time_range, custom_start, custom_end)
 
         if y_axis_column == "battery_info":
             df, data_limit_applied = BigQuery().get_sensor_data(
@@ -93,8 +124,14 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
-        State("custom-time-range-select", "start_date"),
-        State("custom-time-range-select", "end_date"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
@@ -104,24 +141,48 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         sensor_name,
         time_range,
         custom_start_date,
+        custom_start_hour,
+        custom_start_minute,
+        custom_start_second,
         custom_end_date,
+        custom_end_hour,
+        custom_end_minute,
+        custom_end_second,
         refresh,
     ):
         """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
         changed or the refresh button is clicked.
 
         :param str installation_reference:
+        :param str node_id:
         :param str sensor_name:
         :param str time_range:
-        :param datetime.date|None custom_start_date:
-        :param datetime.date|None custom_end_date:
+        :param str|None custom_start_date:
+        :param int|None custom_start_hour:
+        :param int|None custom_start_minute:
+        :param int|None custom_start_second:
+        :param str|None custom_end_date:
+        :param int|None custom_end_hour:
+        :param int|None custom_end_minute:
+        :param int|None custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range, custom_start_date, custom_end_date)
+        custom_start, custom_end = _combine_dates_and_times(
+            custom_start_date,
+            custom_start_hour,
+            custom_start_minute,
+            custom_start_second,
+            custom_end_date,
+            custom_end_hour,
+            custom_end_minute,
+            custom_end_second,
+        )
+
+        start, finish = generate_time_range(time_range, custom_start, custom_end)
 
         df, data_limit_applied = BigQuery().get_sensor_data(
             installation_reference,
@@ -256,9 +317,16 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
     @app.callback(
         [
-            Output("custom-time-range-select", "disabled"),
-            Output("custom-time-range-select", "start_date"),
-            Output("custom-time-range-select", "end_date"),
+            Output("start-date", "disabled"),
+            Output("start-date", "date"),
+            Output("start-hour", "disabled"),
+            Output("start-minute", "disabled"),
+            Output("start-second", "disabled"),
+            Output("end-date", "disabled"),
+            Output("end-date", "date"),
+            Output("end-hour", "disabled"),
+            Output("end-minute", "disabled"),
+            Output("end-second", "disabled"),
         ],
         [
             Input("time-range-select", "value"),
@@ -270,7 +338,8 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str time_range:
         :return bool:
         """
-        return (time_range != "Custom", None, None)
+        disabled = time_range != "Custom"
+        return (disabled, None, disabled, disabled, disabled, disabled, None, disabled, disabled, disabled)
 
     @app.callback(
         Output("app", "children"),
@@ -283,3 +352,45 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :return list:
         """
         return tabs[section_name]
+
+
+def _combine_dates_and_times(
+    start_date,
+    start_hour,
+    start_minute,
+    start_second,
+    end_date,
+    end_hour,
+    end_minute,
+    end_second,
+):
+    """If all inputs are given, combine the start inputs into a start datetime and the end inputs into an end datetime;
+    otherwise, return `None` as the start and end datetimes.
+
+    :param str|None start_date:
+    :param int|None start_hour:
+    :param int|None start_minute:
+    :param int|None start_second:
+    :param str|None end_date:
+    :param int|None end_hour:
+    :param int|None end_minute:
+    :param int|None end_second:
+    :return (datetime.datetime, datetime.datetime)|(None, None):
+    """
+    if all(
+        argument is not None
+        for argument in (start_date, start_hour, start_minute, start_second, end_date, end_hour, end_minute, end_second)
+    ):
+        start = datetime.datetime.combine(
+            dt.date.fromisoformat(start_date),
+            datetime.time(hour=start_hour, minute=start_minute, second=start_second),
+        )
+
+        end = datetime.datetime.combine(
+            dt.date.fromisoformat(end_date),
+            datetime.time(hour=end_hour, minute=end_minute, second=end_second),
+        )
+
+        return (start, end)
+
+    return (None, None)
