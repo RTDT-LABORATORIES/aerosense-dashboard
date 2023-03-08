@@ -47,13 +47,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         y_axis_column,
         time_range,
         custom_start_date,
-        start_hour,
-        start_minute,
-        start_second,
+        custom_start_hour,
+        custom_start_minute,
+        custom_start_second,
         custom_end_date,
-        end_hour,
-        end_minute,
-        end_second,
+        custom_end_hour,
+        custom_end_minute,
+        custom_end_second,
         refresh,
     ):
         """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
@@ -64,13 +64,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str y_axis_column:
         :param str time_range:
         :param str|None custom_start_date:
-        :param int|float start_hour:
-        :param int|float start_minute:
-        :param int|float start_second:
+        :param int|float custom_start_hour:
+        :param int|float custom_start_minute:
+        :param int|float custom_start_second:
         :param str|None custom_end_date:
-        :param int|float end_hour:
-        :param int|float end_minute:
-        :param int|float end_second:
+        :param int|float custom_end_hour:
+        :param int|float custom_end_minute:
+        :param int|float custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
@@ -79,13 +79,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
         custom_start, custom_end = _combine_dates_and_times(
             custom_start_date,
-            start_hour,
-            start_minute,
-            start_second,
+            custom_start_hour,
+            custom_start_minute,
+            custom_start_second,
             custom_end_date,
-            end_hour,
-            end_minute,
-            end_second,
+            custom_end_hour,
+            custom_end_minute,
+            custom_end_second,
         )
 
         start, finish = generate_time_range(time_range, custom_start, custom_end)
@@ -135,13 +135,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         sensor_name,
         time_range,
         custom_start_date,
-        start_hour,
-        start_minute,
-        start_second,
+        custom_start_hour,
+        custom_start_minute,
+        custom_start_second,
         custom_end_date,
-        end_hour,
-        end_minute,
-        end_second,
+        custom_end_hour,
+        custom_end_minute,
+        custom_end_second,
         refresh,
     ):
         """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
@@ -152,13 +152,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str sensor_name:
         :param str time_range:
         :param str|None custom_start_date:
-        :param int|float start_hour:
-        :param int|float start_minute:
-        :param int|float start_second:
+        :param int|float custom_start_hour:
+        :param int|float custom_start_minute:
+        :param int|float custom_start_second:
         :param str|None custom_end_date:
-        :param int|float end_hour:
-        :param int|float end_minute:
-        :param int|float end_second:
+        :param int|float custom_end_hour:
+        :param int|float custom_end_minute:
+        :param int|float custom_end_second:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
@@ -167,13 +167,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
         custom_start, custom_end = _combine_dates_and_times(
             custom_start_date,
-            start_hour,
-            start_minute,
-            start_second,
+            custom_start_hour,
+            custom_start_minute,
+            custom_start_second,
             custom_end_date,
-            end_hour,
-            end_minute,
-            end_second,
+            custom_end_hour,
+            custom_end_minute,
+            custom_end_second,
         )
 
         start, finish = generate_time_range(time_range, custom_start, custom_end)
