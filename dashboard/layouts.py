@@ -39,7 +39,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         html.Label(html.B("Time range")),
                         TimeRangeSelect(),
                         html.Br(),
-                        html.Label("Custom time range"),
+                        html.Label(html.B("Custom time range")),
                         html.Div(
                             [
                                 html.Div(
