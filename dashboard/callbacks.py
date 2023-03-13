@@ -193,11 +193,12 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             finish=finish,
         )
 
+        # Extract only data columns and set index to 'datetime', so that DataFrame is accepted by RawSignal class
         data_columns = df.columns[df.columns.str.startswith('f')].tolist()
         sensor_data = df[["datetime"] + data_columns].set_index('datetime')
         raw_data = RawSignal(sensor_data, sensor_name)
-        raw_data.measurement_to_variable()
-        plot_df = raw_data.dataframe.reset_index()
+        raw_data.measurement_to_variable()  # Convert raw data int to float value in SI units
+        plot_df = raw_data.dataframe.reset_index()  # reset index to pass DataFrame to plot_sensors function
 
         figure = plot_sensors(plot_df, line_descriptions=sensor_types[sensor_name]["variable"])
         figure.update_layout(height=800)
