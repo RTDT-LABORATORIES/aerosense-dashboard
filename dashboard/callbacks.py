@@ -5,8 +5,8 @@ import logging
 from dash import Input, Output, State
 
 from aerosense_tools.plots import plot_connection_statistic, plot_pressure_bar_chart, plot_sensors
-from aerosense_tools.queries import ROW_LIMIT, BigQuery
 from aerosense_tools.preprocess import RawSignal
+from aerosense_tools.queries import ROW_LIMIT, BigQuery
 from aerosense_tools.utils import generate_time_range, get_cleaned_sensor_column_names
 
 
