@@ -203,6 +203,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         sensor_data.columns = sensor_types[sensor_name]["sensors"]
         # Use pre-process library
         raw_data = RawSignal(sensor_data, sensor_name)
+        raw_data.pad_gaps()
         raw_data.measurement_to_variable()
         sensor_session = SensorMeasurementSession(raw_data.dataframe, sensor_name)
 
