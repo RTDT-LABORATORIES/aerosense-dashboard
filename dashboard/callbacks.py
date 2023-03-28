@@ -1,11 +1,12 @@
 import datetime
 import datetime as dt
+import plotly.express as px
 import logging
 
 from dash import Input, Output, State
 
 from aerosense_tools.plots import plot_connection_statistic, plot_pressure_bar_chart, plot_sensors
-from aerosense_tools.preprocess import RawSignal
+from aerosense_tools.preprocess import RawSignal, SensorMeasurementSession
 from aerosense_tools.queries import ROW_LIMIT, BigQuery
 from aerosense_tools.utils import generate_time_range, get_cleaned_sensor_column_names
 
@@ -193,14 +194,20 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             finish=finish,
         )
 
+        if df.empty:
+            return (px.scatter(), "No data to plot")
+
         # Extract only data columns and set index to 'datetime', so that DataFrame is accepted by RawSignal class
         data_columns = df.columns[df.columns.str.startswith('f')].tolist()
         sensor_data = df[["datetime"] + data_columns].set_index('datetime')
+        sensor_data.columns = sensor_types[sensor_name]["sensors"]
+        # Use pre-process library
         raw_data = RawSignal(sensor_data, sensor_name)
-        raw_data.measurement_to_variable()  # Convert raw data int to float value in SI units
-        plot_df = raw_data.dataframe.reset_index()  # reset index to pass DataFrame to plot_sensors function
+        raw_data.pad_gaps()
+        raw_data.measurement_to_variable()
+        sensor_session = SensorMeasurementSession(raw_data.dataframe, sensor_name)
 
-        figure = plot_sensors(plot_df, line_descriptions=sensor_types[sensor_name]["variable"])
+        figure = sensor_session.plot(sensor_types)
         figure.update_layout(height=800)
 
         if data_limit_applied:
