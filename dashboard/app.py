@@ -6,7 +6,7 @@ from flask_caching import Cache
 
 from aerosense_tools.queries import BigQuery
 from dashboard.callbacks import register_callbacks
-from dashboard.layouts import create_pressure_profile_tab_layout, create_sensors_tab_layout
+from dashboard.layouts import create_cp_plot_tab_layout, create_sensors_tab_layout
 
 
 EXCLUDED_SENSORS = {"microphone", "connection_statistics", "battery_info"}
@@ -41,7 +41,7 @@ tabs = {
         graph_id="sensors-graph",
         data_limit_warning_id="sensor-data-limit-warning",
     ),
-    "pressure_profile": create_pressure_profile_tab_layout(app),
+    "cp_plot": create_cp_plot_tab_layout(app),
 }
 
 app.layout = html.Div(

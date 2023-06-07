@@ -1,14 +1,14 @@
 import datetime
 import datetime as dt
-import plotly.express as px
 import logging
 
+import plotly.express as px
 from dash import Input, Output, State
 
-from aerosense_tools.plots import plot_connection_statistic, plot_pressure_bar_chart, plot_sensors
+from aerosense_tools.plots import plot_connection_statistic, plot_cp_curve, plot_sensors
 from aerosense_tools.preprocess import RawSignal, SensorMeasurementSession
 from aerosense_tools.queries import ROW_LIMIT, BigQuery
-from aerosense_tools.utils import generate_time_range, get_cleaned_sensor_column_names
+from aerosense_tools.utils import generate_time_range
 
 
 logger = logging.getLogger(__name__)
@@ -198,8 +198,8 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             return (px.scatter(), "No data to plot")
 
         # Extract only data columns and set index to 'datetime', so that DataFrame is accepted by RawSignal class
-        data_columns = df.columns[df.columns.str.startswith('f')].tolist()
-        sensor_data = df[["datetime"] + data_columns].set_index('datetime')
+        data_columns = df.columns[df.columns.str.startswith("f")].tolist()
+        sensor_data = df[["datetime"] + data_columns].set_index("datetime")
         sensor_data.columns = sensor_types[sensor_name]["sensors"]
         # Use pre-process library
         raw_data = RawSignal(sensor_data, sensor_name)
@@ -216,8 +216,8 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         return (figure, [])
 
     @cache.memoize(timeout=0)
-    def get_pressure_profiles_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
-        """Get pressure profiles for the given node during the given time window along with the minimum and maximum
+    def get_pressure_data_for_time_window(installation_reference, node_id, start_datetime, finish_datetime):
+        """Get pressure data for the given node during the given time window along with the minimum and maximum
         pressures over all the sensors over that window.
 
         :param str installation_reference:
@@ -235,20 +235,24 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         )
 
         logger.info(
-            "Downloaded pressure profile %d second time window for start datetime %r and finish datetime %r.",
+            "Downloaded pressure data %d second time window for start datetime %r and finish datetime %r.",
             (finish_datetime - start_datetime).seconds,
             start_datetime.isoformat(),
             finish_datetime.isoformat(),
         )
 
-        sensor_column_names, _ = get_cleaned_sensor_column_names(df)
-        df_with_sensors_only = df[sensor_column_names]
-        return (df, df_with_sensors_only.min().min(), df_with_sensors_only.max().max())
+        return df
 
     @app.callback(
         Output("pressure-profile-graph", "figure"),
         State("installation-select", "value"),
         State("node-select", "value"),
+        State("sensor-coordinates-select", "value"),
+        State("air-density-input", "value"),
+        State("u-input", "value"),
+        State("p-inf-input", "value"),
+        State("cp-minimum-input", "value"),
+        State("cp-maximum-input", "value"),
         State("date-select", "date"),
         State("hour", "value"),
         State("minute", "value"),
@@ -256,13 +260,29 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         Input("time-slider", "value"),
         Input("refresh-button", "n_clicks"),
     )
-    def plot_pressure_profile_graph(installation_reference, node_id, date, hour, minute, second, time_delta, refresh):
+    @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
+    def plot_cp_graph(
+        installation_reference,
+        node_id,
+        sensor_coordinates_reference,
+        air_density,
+        u,
+        p_inf,
+        cp_minimum,
+        cp_maximum,
+        date,
+        hour,
+        minute,
+        second,
+        time_delta,
+        refresh,
+    ):
         if not node_id:
             node_id = None
 
         initial_datetime = dt.datetime.combine(date=dt.date.fromisoformat(date), time=dt.time(hour, minute, second))
 
-        df, minimum, maximum = get_pressure_profiles_for_time_window(
+        df = get_pressure_data_for_time_window(
             installation_reference=installation_reference,
             node_id=node_id,
             start_datetime=initial_datetime,
@@ -276,8 +296,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             & (df["datetime"] < slider_datetime + dt.timedelta(seconds=0.5))
         ]
 
-        logger.debug("Filtered pressure profile time window for single datetime.")
-        return plot_pressure_bar_chart(df, minimum, maximum)
+        logger.debug("Filtered pressure data time window for single datetime.")
+
+        return plot_cp_curve(
+            df=df,
+            sensor_coordinates_reference=sensor_coordinates_reference,
+            air_density=air_density,
+            u=u,
+            p_inf=p_inf,
+            cp_minimum=cp_minimum,
+            cp_maximum=cp_maximum,
+        )
 
     @app.callback(
         Output("installation-select", "options"),
@@ -315,6 +344,18 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             first_option = None
 
         return nodes, first_option
+
+    @app.callback(
+        Output("sensor-coordinates-select", "options"),
+        Input("sensor-coordinates-check-button", "n_clicks"),
+    )
+    def update_sensor_coordinates_selector(refresh):
+        """Update the sensor coordinates selector with any new ones when the refresh button is clicked.
+
+        :param int refresh:
+        :return list:
+        """
+        return BigQuery().get_sensor_coordinates()["reference"]
 
     @app.callback(
         Output("graph-title", "children"),
