@@ -183,13 +183,13 @@ def create_cp_plot_tab_layout(app):
                             [
                                 html.Div(
                                     [
-                                        html.Label("u value"),
+                                        html.Label("u"),
                                         dash_daq.NumericInput(
                                             id="u-input",
                                             value=10,
                                             min=0,
                                             max=1e9,
-                                            size=150,
+                                            size=120,
                                             persistence=True,
                                         ),
                                     ],
@@ -197,13 +197,13 @@ def create_cp_plot_tab_layout(app):
                                 ),
                                 html.Div(
                                     [
-                                        html.Label("p_inf value"),
+                                        html.Label("p_inf"),
                                         dash_daq.NumericInput(
                                             id="p-inf-input",
                                             value=1e5,
                                             min=0,
                                             max=1e12,
-                                            size=150,
+                                            size=120,
                                             persistence=True,
                                         ),
                                     ],
@@ -211,13 +211,13 @@ def create_cp_plot_tab_layout(app):
                                 ),
                                 html.Div(
                                     [
-                                        html.Label("Cp minimum value"),
+                                        html.Label("Cp minimum"),
                                         dash_daq.NumericInput(
                                             id="cp-minimum-input",
                                             value=-10,
                                             min=-1000,
                                             max=1000,
-                                            size=150,
+                                            size=120,
                                             persistence=True,
                                         ),
                                     ],
@@ -225,13 +225,13 @@ def create_cp_plot_tab_layout(app):
                                 ),
                                 html.Div(
                                     [
-                                        html.Label("Cp maximum value"),
+                                        html.Label("Cp maximum"),
                                         dash_daq.NumericInput(
                                             id="cp-maximum-input",
                                             value=3,
                                             min=-1000,
                                             max=1000,
-                                            size=150,
+                                            size=120,
                                             persistence=True,
                                         ),
                                     ],
