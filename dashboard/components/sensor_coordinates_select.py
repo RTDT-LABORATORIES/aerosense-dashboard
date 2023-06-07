@@ -8,7 +8,7 @@ def SensorCoordinatesSelect():
 
     return dcc.Dropdown(
         options=sensor_coordinates["reference"],
-        id="sensor-coordinates-reference-input",
+        id="sensor-coordinates-select",
         value=sensor_coordinates.iloc[0]["reference"],
         persistence=True,
     )

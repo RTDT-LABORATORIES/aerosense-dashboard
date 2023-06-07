@@ -232,6 +232,11 @@ def create_cp_plot_tab_layout(app):
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+                        html.Button(
+                            "Check for new sensor coordinates",
+                            id="sensor-coordinates-check-button",
+                            n_clicks=0,
+                        ),
                     ],
                     id="buttons-section",
                     className="sidebar-content",

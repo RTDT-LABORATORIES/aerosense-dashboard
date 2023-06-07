@@ -247,7 +247,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         Output("pressure-profile-graph", "figure"),
         State("installation-select", "value"),
         State("node-select", "value"),
-        State("sensor-coordinates-reference-input", "value"),
+        State("sensor-coordinates-select", "value"),
         State("u-input", "value"),
         State("p-inf-input", "value"),
         State("cp-minimum-input", "value"),
@@ -340,6 +340,18 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             first_option = None
 
         return nodes, first_option
+
+    @app.callback(
+        Output("sensor-coordinates-select", "options"),
+        Input("sensor-coordinates-check-button", "n_clicks"),
+    )
+    def update_sensor_coordinates_selector(refresh):
+        """Update the sensor coordinates selector with any new ones when the refresh button is clicked.
+
+        :param int refresh:
+        :return list:
+        """
+        return BigQuery().get_sensor_coordinates()["reference"]
 
     @app.callback(
         Output("graph-title", "children"),
