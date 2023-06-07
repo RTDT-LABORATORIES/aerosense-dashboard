@@ -157,8 +157,8 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
     ]
 
 
-def create_pressure_profile_tab_layout(app):
-    """Create the layout corresponding to the pressure profile tab.
+def create_cp_plot_tab_layout(app):
+    """Create the layout corresponding to the Cp plot tab.
 
     :param dash.Dash app:
     :return list:
@@ -167,7 +167,7 @@ def create_pressure_profile_tab_layout(app):
         html.Div(
             [
                 html.Div([Logo(app.get_asset_url("logo.png")), Title(), About()]),
-                Navigation(selected_tab="pressure_profile"),
+                Navigation(selected_tab="cp_plot"),
                 html.Br(),
                 html.Div(
                     [
@@ -176,6 +176,35 @@ def create_pressure_profile_tab_layout(app):
                         InstallationSelect(),
                         html.Label("Node ID"),
                         NodeSelect(),
+                        html.Label("Sensor coordinates reference"),
+                        dcc.Input(
+                            id="sensor-coordinates-reference-input",
+                            type="text",
+                            placeholder="Sensor coordinates reference",
+                            persistence=True,
+                        ),
+                        html.Label("u value"),
+                        dash_daq.NumericInput(id="u-input", value=10, min=0, max=1e9, size=120, persistence=True),
+                        html.Label("p_inf value"),
+                        dash_daq.NumericInput(id="p-inf-input", value=1e5, min=0, max=1e12, size=120, persistence=True),
+                        html.Label("Cp minimum value"),
+                        dash_daq.NumericInput(
+                            id="cp-minimum-input",
+                            value=-10,
+                            min=-1000,
+                            max=1000,
+                            size=120,
+                            persistence=True,
+                        ),
+                        html.Label("Cp maximum value"),
+                        dash_daq.NumericInput(
+                            id="cp-maximum-input",
+                            value=3,
+                            min=-1000,
+                            max=1000,
+                            size=120,
+                            persistence=True,
+                        ),
                         html.Br(),
                         html.Label(html.B("Start date/time")),
                         html.Label("Date"),
@@ -218,7 +247,7 @@ def create_pressure_profile_tab_layout(app):
             [
                 html.Div(
                     [
-                        html.H3("Pressure profile", id="graph-title"),
+                        html.H3("Cp plot", id="graph-title"),
                     ],
                     className="text-box",
                 ),
