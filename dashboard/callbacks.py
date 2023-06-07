@@ -248,6 +248,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("installation-select", "value"),
         State("node-select", "value"),
         State("sensor-coordinates-select", "value"),
+        State("air-density-input", "value"),
         State("u-input", "value"),
         State("p-inf-input", "value"),
         State("cp-minimum-input", "value"),
@@ -264,6 +265,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         installation_reference,
         node_id,
         sensor_coordinates_reference,
+        air_density,
         u,
         p_inf,
         cp_minimum,
@@ -299,6 +301,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         return plot_cp_curve(
             df=df,
             sensor_coordinates_reference=sensor_coordinates_reference,
+            air_density=air_density,
             u=u,
             p_inf=p_inf,
             cp_minimum=cp_minimum,

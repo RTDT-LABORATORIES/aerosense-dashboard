@@ -183,6 +183,20 @@ def create_cp_plot_tab_layout(app):
                             [
                                 html.Div(
                                     [
+                                        html.Label("Air density"),
+                                        dash_daq.NumericInput(
+                                            id="air-density-input",
+                                            value=1.225,
+                                            min=0,
+                                            max=1e9,
+                                            size=120,
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
                                         html.Label("u"),
                                         dash_daq.NumericInput(
                                             id="u-input",
