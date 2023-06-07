@@ -5,6 +5,7 @@ from dash import dcc, html
 
 from dashboard.components import About, InstallationSelect, Logo, Navigation, Title
 from dashboard.components.node_select import NodeSelect
+from dashboard.components.sensor_coordinates_select import SensorCoordinatesSelect
 from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 
@@ -177,12 +178,7 @@ def create_cp_plot_tab_layout(app):
                         html.Label("Node ID"),
                         NodeSelect(),
                         html.Label("Sensor coordinates reference"),
-                        dcc.Input(
-                            id="sensor-coordinates-reference-input",
-                            type="text",
-                            placeholder="Sensor coordinates reference",
-                            persistence=True,
-                        ),
+                        SensorCoordinatesSelect(),
                         html.Label("u value"),
                         dash_daq.NumericInput(id="u-input", value=10, min=0, max=1e9, size=120, persistence=True),
                         html.Label("p_inf value"),
