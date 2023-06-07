@@ -259,6 +259,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         Input("time-slider", "value"),
         Input("refresh-button", "n_clicks"),
     )
+    @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
     def plot_cp_graph(
         installation_reference,
         node_id,
