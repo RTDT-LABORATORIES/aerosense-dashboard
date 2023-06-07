@@ -203,20 +203,44 @@ def create_cp_plot_tab_layout(app):
                         ),
                         html.Br(),
                         html.Label(html.B("Start date/time")),
-                        html.Label("Date"),
-                        dcc.DatePickerSingle(
-                            id="date-select",
-                            date=datetime.datetime.now().date().isoformat(),
-                            display_format="Do MMM Y",
-                            persistence=True,
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Label("Date"),
+                                        dcc.DatePickerSingle(
+                                            id="date-select",
+                                            date=datetime.datetime.now().date().isoformat(),
+                                            display_format="Do MMM Y",
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("Hour"),
+                                        dash_daq.NumericInput(id="hour", value=0, min=0, max=23, persistence=True),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("Minute"),
+                                        dash_daq.NumericInput(id="minute", value=0, min=0, max=59, persistence=True),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("Second"),
+                                        dash_daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                            ],
+                            style={"margin": "10px 0"},
                         ),
-                        html.Br(),
-                        html.Label("Hour"),
-                        dash_daq.NumericInput(id="hour", value=0, min=0, max=23, persistence=True),
-                        html.Label("Minute"),
-                        dash_daq.NumericInput(id="minute", value=0, min=0, max=59, persistence=True),
-                        html.Label("Second"),
-                        dash_daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
                         html.Br(),
                         html.Label(html.B("Step forward (seconds)")),
                         html.Br(),
