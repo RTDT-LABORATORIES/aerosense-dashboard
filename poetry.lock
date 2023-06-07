@@ -2,7 +2,7 @@
 
 [[package]]
 name = "aerosense-tools"
-version = "0.9.0"
+version = "0.9.1"
 description = "Functions for working with aerosense data, useful in building dashboards, analysis notebooks and digital twin services"
 category = "main"
 optional = false
@@ -21,8 +21,8 @@ docs = []
 [package.source]
 type = "git"
 url = "https://github.com/aerosense-ai/aerosense-tools.git"
-reference = "0.9.0"
-resolved_reference = "65824a74deb5c307d18a660f5f64e5faee6fbddd"
+reference = "0.9.1"
+resolved_reference = "4967bb4b90d8d3d0378f9516e76ed95ecce12a90"
 
 [[package]]
 name = "alabaster"
@@ -2508,4 +2508,4 @@ docs = ["Sphinx", "sphinx-charts", "sphinx-math-dollar", "sphinx-rtd-theme", "sp
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "cc4e9c5df54cbec16adc794758369ef391bf832ec382886b4de8b85459fcb038"
+content-hash = "b360c2c18201bce018b94ddc956e06953a0ebb4d4d016e58f3e99f57608ceef5"
