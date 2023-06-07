@@ -179,27 +179,66 @@ def create_cp_plot_tab_layout(app):
                         NodeSelect(),
                         html.Label("Sensor coordinates reference"),
                         SensorCoordinatesSelect(),
-                        html.Label("u value"),
-                        dash_daq.NumericInput(id="u-input", value=10, min=0, max=1e9, size=120, persistence=True),
-                        html.Label("p_inf value"),
-                        dash_daq.NumericInput(id="p-inf-input", value=1e5, min=0, max=1e12, size=120, persistence=True),
-                        html.Label("Cp minimum value"),
-                        dash_daq.NumericInput(
-                            id="cp-minimum-input",
-                            value=-10,
-                            min=-1000,
-                            max=1000,
-                            size=120,
-                            persistence=True,
-                        ),
-                        html.Label("Cp maximum value"),
-                        dash_daq.NumericInput(
-                            id="cp-maximum-input",
-                            value=3,
-                            min=-1000,
-                            max=1000,
-                            size=120,
-                            persistence=True,
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Label("u value"),
+                                        dash_daq.NumericInput(
+                                            id="u-input",
+                                            value=10,
+                                            min=0,
+                                            max=1e9,
+                                            size=150,
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("p_inf value"),
+                                        dash_daq.NumericInput(
+                                            id="p-inf-input",
+                                            value=1e5,
+                                            min=0,
+                                            max=1e12,
+                                            size=150,
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("Cp minimum value"),
+                                        dash_daq.NumericInput(
+                                            id="cp-minimum-input",
+                                            value=-10,
+                                            min=-1000,
+                                            max=1000,
+                                            size=150,
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Label("Cp maximum value"),
+                                        dash_daq.NumericInput(
+                                            id="cp-maximum-input",
+                                            value=3,
+                                            min=-1000,
+                                            max=1000,
+                                            size=150,
+                                            persistence=True,
+                                        ),
+                                    ],
+                                    style={"display": "inline-block"},
+                                ),
+                            ],
+                            style={"margin": "10px 0"},
                         ),
                         html.Br(),
                         html.Label(html.B("Start date/time")),
