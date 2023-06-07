@@ -10,4 +10,5 @@ def InstallationSelect(current_installation_reference=None):
         options=installations,
         id="installation-select",
         value=current_installation_reference or installations[0]["value"],
+        persistence=True,
     )
