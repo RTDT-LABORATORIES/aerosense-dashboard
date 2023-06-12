@@ -341,13 +341,13 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         ],
     )
     def enable_measurement_session_time_range_select(time_range):
-        """Enable the measurement session time range selection if "By measurement session" is chosen in the time range
+        """Enable the measurement session time range selection if "Measurement session" is chosen in the time range
         selector.
 
         :param str time_range:
         :return bool:
         """
-        disabled = time_range != "By measurement session"
+        disabled = time_range != "Measurement session"
         return (
             disabled,
             None,
