@@ -35,7 +35,7 @@ def generate_time_range(time_range, measurement_session=None):
             start = datetime.datetime.fromisoformat(start)
             finish = datetime.datetime.fromisoformat(finish)
             return start, finish
-        except ValueError:
+        except (ValueError, AttributeError):
             return None, None
 
     finish = datetime.datetime.utcnow()
