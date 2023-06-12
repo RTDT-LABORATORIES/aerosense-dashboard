@@ -4,6 +4,7 @@ import logging
 
 import plotly.express as px
 from dash import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from aerosense_tools.plots import plot_connection_statistic, plot_cp_curve, plot_sensors
 from aerosense_tools.preprocess import RawSignal, SensorMeasurementSession
@@ -384,19 +385,77 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             Output("end-hour", "disabled"),
             Output("end-minute", "disabled"),
             Output("end-second", "disabled"),
+            Output("measurement-session-select", "disabled"),
         ],
         [
             Input("time-range-select", "value"),
         ],
     )
-    def enable_custom_time_range_select(time_range):
-        """Enable the custom time range selection if "Custom" is chosen in the time range selector.
+    def enable_measurement_session_time_range_select(time_range):
+        """Enable the measurement session time range selection if "By measurement session" is chosen in the time range
+        selector.
 
         :param str time_range:
         :return bool:
         """
-        disabled = time_range != "Custom"
-        return (disabled, None, disabled, disabled, disabled, disabled, None, disabled, disabled, disabled)
+        disabled = time_range != "By measurement session"
+        return (disabled, None, disabled, disabled, disabled, disabled, None, disabled, disabled, disabled, disabled)
+
+    @app.callback(
+        Output("measurement-session-select", "options"),
+        Input("measurement-session-select", "disabled"),
+        Input("installation-select", "value"),
+        Input("node-select", "value"),
+        Input("y-axis-select", "value"),
+        Input("start-date", "date"),
+        Input("start-hour", "value"),
+        Input("start-minute", "value"),
+        Input("start-second", "value"),
+        Input("end-date", "date"),
+        Input("end-hour", "value"),
+        Input("end-minute", "value"),
+        Input("end-second", "value"),
+    )
+    def update_measurement_session_selector(
+        measurement_session_selection_disabled,
+        installation_reference,
+        node_id,
+        y_axis,
+        start_date,
+        start_hour,
+        start_minute,
+        start_second,
+        end_date,
+        end_hour,
+        end_minute,
+        end_second,
+    ):
+        if measurement_session_selection_disabled:
+            raise PreventUpdate
+
+        start_datetime, finish_datetime = _combine_dates_and_times(
+            start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
+
+        measurement_sessions = BigQuery().get_measurement_sessions(
+            installation_reference=installation_reference,
+            node_id=node_id,
+            sensor_type_reference=y_axis,
+            start=start_datetime,
+            finish=finish_datetime,
+        )
+
+        return [
+            f"{session[1][0]} to {session[1][1]}"
+            for session in measurement_sessions[["start_time", "end_time"]].iterrows()
+        ]
 
     @app.callback(
         Output("app", "children"),

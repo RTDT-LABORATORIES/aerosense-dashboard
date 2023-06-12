@@ -40,7 +40,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         html.Label(html.B("Time range")),
                         TimeRangeSelect(),
                         html.Br(),
-                        html.Label(html.B("Custom time range")),
+                        html.Label(html.B("Measurement sessions")),
                         html.Div(
                             [
                                 html.Div(
@@ -128,6 +128,9 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                             style={"margin": "10px 0"},
                         ),
+                        html.Br(),
+                        html.Label("Measurement session"),
+                        dcc.Dropdown(id="measurement-session-select", persistence=True),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
