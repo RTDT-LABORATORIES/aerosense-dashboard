@@ -61,6 +61,9 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
         start, finish = generate_time_range(time_range, measurement_session)
 
+        if start is None:
+            return (px.scatter(), "No measurement session selected.")
+
         if y_axis_column == "battery_info":
             df, data_limit_applied = BigQuery().get_sensor_data(
                 installation_reference,
@@ -331,6 +334,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             Output("end-minute", "disabled"),
             Output("end-second", "disabled"),
             Output("measurement-session-select", "disabled"),
+            Output("measurement-session-check-button", "disabled"),
         ],
         [
             Input("time-range-select", "value"),
@@ -344,22 +348,36 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :return bool:
         """
         disabled = time_range != "By measurement session"
-        return (disabled, None, disabled, disabled, disabled, disabled, None, disabled, disabled, disabled, disabled)
+        return (
+            disabled,
+            None,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+            None,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+        )
 
     @app.callback(
         Output("measurement-session-select", "options"),
-        Input("measurement-session-select", "disabled"),
-        Input("installation-select", "value"),
-        Input("node-select", "value"),
-        Input("y-axis-select", "value"),
-        Input("start-date", "date"),
-        Input("start-hour", "value"),
-        Input("start-minute", "value"),
-        Input("start-second", "value"),
-        Input("end-date", "date"),
-        Input("end-hour", "value"),
-        Input("end-minute", "value"),
-        Input("end-second", "value"),
+        State("measurement-session-select", "disabled"),
+        State("installation-select", "value"),
+        State("node-select", "value"),
+        State("y-axis-select", "value"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
+        Input("measurement-session-check-button", "n_clicks"),
     )
     def update_measurement_session_selector(
         measurement_session_selection_disabled,
@@ -374,6 +392,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         end_hour,
         end_minute,
         end_second,
+        refresh,
     ):
         if measurement_session_selection_disabled:
             raise PreventUpdate
