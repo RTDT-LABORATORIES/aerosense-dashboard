@@ -409,6 +409,10 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             end_second,
         )
 
+        # The connection statistics always come together, so they have the same measurement sessions.
+        if y_axis in {"filtered_rssi", "filtered_rssi", "tx_power", "allocated_heap_memory"}:
+            y_axis = "connection_statistics"
+
         measurement_sessions = BigQuery().get_measurement_sessions(
             installation_reference=installation_reference,
             node_id=node_id,
