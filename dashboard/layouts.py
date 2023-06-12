@@ -128,7 +128,6 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                             style={"margin": "10px 0"},
                         ),
-                        html.Br(),
                         html.Label("Measurement session"),
                         dcc.Dropdown(id="measurement-session-select", persistence=True),
                         html.Br(),
