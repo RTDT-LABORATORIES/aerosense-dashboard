@@ -365,6 +365,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
     @app.callback(
         Output("measurement-session-select", "options"),
+        Output("measurement-session-select", "value"),
         State("measurement-session-select", "disabled"),
         State("installation-select", "value"),
         State("node-select", "value"),
@@ -416,10 +417,15 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             finish=finish_datetime,
         )
 
-        return [
+        measurement_sessions = [
             f"{session[1][0]} to {session[1][1]}"
             for session in measurement_sessions[["start_time", "end_time"]].iterrows()
         ]
+
+        if not measurement_sessions:
+            return [], None
+
+        return measurement_sessions, measurement_sessions[0]
 
     @app.callback(
         Output("app", "children"),
