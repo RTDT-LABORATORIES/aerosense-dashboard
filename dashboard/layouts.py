@@ -30,9 +30,17 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                     [
                         html.Label(html.B("Installation")),
                         html.Label("Installation reference"),
-                        InstallationSelect(),
+                        dcc.Loading(
+                            [
+                                InstallationSelect(),
+                            ],
+                        ),
                         html.Label("Node ID"),
-                        NodeSelect(),
+                        dcc.Loading(
+                            [
+                                NodeSelect(),
+                            ],
+                        ),
                         html.Br(),
                         html.Label(html.B("Sensor")),
                         SensorSelect(sensor_names),
@@ -183,11 +191,23 @@ def create_cp_plot_tab_layout(app):
                     [
                         html.Label(html.B("Installation")),
                         html.Label("Installation reference"),
-                        InstallationSelect(),
+                        dcc.Loading(
+                            [
+                                InstallationSelect(),
+                            ],
+                        ),
                         html.Label("Node ID"),
-                        NodeSelect(),
+                        dcc.Loading(
+                            [
+                                NodeSelect(),
+                            ],
+                        ),
                         html.Label("Sensor coordinates reference"),
-                        SensorCoordinatesSelect(),
+                        dcc.Loading(
+                            [
+                                SensorCoordinatesSelect(),
+                            ]
+                        ),
                         html.Div(
                             [
                                 html.Div(
