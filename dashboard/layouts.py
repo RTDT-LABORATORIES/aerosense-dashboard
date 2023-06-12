@@ -132,7 +132,11 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         html.Br(),
                         html.Br(),
                         html.Label("Measurement session"),
-                        dcc.Dropdown(id="measurement-session-select", persistence=True),
+                        dcc.Loading(
+                            [
+                                dcc.Dropdown(id="measurement-session-select", persistence=True),
+                            ]
+                        ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
                         html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
