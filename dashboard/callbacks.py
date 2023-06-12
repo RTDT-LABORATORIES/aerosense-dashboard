@@ -308,9 +308,10 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
     @app.callback(
         Output("graph-title", "children"),
-        Input("y-axis-select", "value"),
+        State("y-axis-select", "value"),
+        Input("refresh-button", "n_clicks"),
     )
-    def update_graph_title(selected_y_axis):
+    def update_graph_title(selected_y_axis, refresh):
         """Update the graph title with the name of the currently selected y-axis.
 
         :param str selected_y_axis:
