@@ -42,6 +42,9 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                         ),
                         html.Br(),
+                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
+                        html.Br(),
+                        html.Br(),
                         html.Label(html.B("Sensor")),
                         SensorSelect(sensor_names),
                         html.Br(),
@@ -147,7 +150,6 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                     ],
                     id="buttons-section",
                     className="sidebar-content",
@@ -202,6 +204,10 @@ def create_cp_plot_tab_layout(app):
                                 NodeSelect(),
                             ],
                         ),
+                        html.Br(),
+                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
+                        html.Br(),
+                        html.Br(),
                         html.Label("Sensor coordinates reference"),
                         dcc.Loading(
                             [
@@ -337,7 +343,6 @@ def create_cp_plot_tab_layout(app):
                         ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                         html.Button(
                             "Check for new sensor coordinates",
                             id="sensor-coordinates-check-button",
