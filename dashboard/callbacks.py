@@ -433,6 +433,19 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         return measurement_sessions, measurement_sessions[0]
 
     @app.callback(
+        # Use a dummy output.
+        Output("run-session-extraction", "children"),
+        Input("run-session-extraction", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def run_session_extraction_in_database(refresh):
+        """Run session extraction in the database.
+
+        :return None:
+        """
+        BigQuery().extract_and_add_new_measurement_sessions()
+
+    @app.callback(
         Output("app", "children"),
         Input("nav-tabs", "value"),
     )
