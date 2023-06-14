@@ -20,7 +20,7 @@ def generate_time_range(time_range, measurement_session=None):
     - Last month
     - Last year
     - All time
-    - Custom
+    - Measurement session
 
     :param str time_range:
     :param str|None measurement_session:
