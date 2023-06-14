@@ -150,15 +150,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        dcc.Loading(
-                            [
-                                html.Button(
-                                    "Run session extraction in database",
-                                    id="run-session-extraction",
-                                    n_clicks=0,
-                                ),
-                            ]
+                        html.Button(
+                            "Run session extraction in database",
+                            id="run-session-extraction",
+                            n_clicks=0,
                         ),
+                        html.Br(id="run-session-extraction-output-placeholder"),
                     ],
                     id="buttons-section",
                     className="sidebar-content",

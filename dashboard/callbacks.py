@@ -1,8 +1,10 @@
 import datetime
 import datetime as dt
 import logging
+import threading
 
 import plotly.express as px
+import requests
 from dash import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -13,6 +15,11 @@ from dashboard.utils import generate_time_range
 
 
 logger = logging.getLogger(__name__)
+
+
+SESSIONS_EXTRACTION_CLOUD_FUNCTION_URL = (
+    "https://europe-west6-aerosense-twined.cloudfunctions.net/data-gateway-sessions"
+)
 
 
 def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
@@ -434,16 +441,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
     @app.callback(
         # Use a dummy output.
-        Output("run-session-extraction", "children"),
+        Output("run-session-extraction-output-placeholder", "children"),
         Input("run-session-extraction", "n_clicks"),
         prevent_initial_call=True,
     )
     def run_session_extraction_in_database(refresh):
-        """Run session extraction in the database.
+        """Trigger measurement session extraction in the database.
 
         :return None:
         """
-        BigQuery().extract_and_add_new_measurement_sessions()
+        threading.Thread(target=requests.post, args=(SESSIONS_EXTRACTION_CLOUD_FUNCTION_URL,), daemon=True).start()
+        logger.info("Triggered measurement session extraction cloud function.")
 
     @app.callback(
         Output("app", "children"),
