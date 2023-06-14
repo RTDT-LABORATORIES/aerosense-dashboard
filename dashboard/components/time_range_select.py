@@ -1,11 +1,11 @@
 from dash import dcc
 
-from aerosense_tools.utils import TIME_RANGE_OPTIONS
+from dashboard.utils import TIME_RANGE_OPTIONS
 
 
 def TimeRangeSelect():
     return dcc.Dropdown(
-        options=list(TIME_RANGE_OPTIONS.keys()) + ["All time", "Custom"],
+        options=list(TIME_RANGE_OPTIONS.keys()) + ["All time", "Measurement session"],
         id="time-range-select",
         value="Last day",
         persistence=True,

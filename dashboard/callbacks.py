@@ -1,17 +1,25 @@
 import datetime
 import datetime as dt
 import logging
+import threading
 
 import plotly.express as px
+import requests
 from dash import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from aerosense_tools.plots import plot_connection_statistic, plot_cp_curve, plot_sensors
 from aerosense_tools.preprocess import RawSignal, SensorMeasurementSession
 from aerosense_tools.queries import ROW_LIMIT, BigQuery
-from aerosense_tools.utils import generate_time_range
+from dashboard.utils import generate_time_range
 
 
 logger = logging.getLogger(__name__)
+
+
+SESSIONS_EXTRACTION_CLOUD_FUNCTION_URL = (
+    "https://europe-west6-aerosense-twined.cloudfunctions.net/data-gateway-sessions"
+)
 
 
 def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
@@ -32,14 +40,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
-        State("start-date", "date"),
-        State("start-hour", "value"),
-        State("start-minute", "value"),
-        State("start-second", "value"),
-        State("end-date", "date"),
-        State("end-hour", "value"),
-        State("end-minute", "value"),
-        State("end-second", "value"),
+        State("measurement-session-select", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
@@ -48,14 +49,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         node_id,
         y_axis_column,
         time_range,
-        custom_start_date,
-        custom_start_hour,
-        custom_start_minute,
-        custom_start_second,
-        custom_end_date,
-        custom_end_hour,
-        custom_end_minute,
-        custom_end_second,
+        measurement_session,
         refresh,
     ):
         """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
@@ -65,32 +59,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str node_id:
         :param str y_axis_column:
         :param str time_range:
-        :param str|None custom_start_date:
-        :param int|None custom_start_hour:
-        :param int|None custom_start_minute:
-        :param int|None custom_start_second:
-        :param str|None custom_end_date:
-        :param int|None custom_end_hour:
-        :param int|None custom_end_minute:
-        :param int|None custom_end_second:
+        :param str measurement_session:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        custom_start, custom_end = _combine_dates_and_times(
-            custom_start_date,
-            custom_start_hour,
-            custom_start_minute,
-            custom_start_second,
-            custom_end_date,
-            custom_end_hour,
-            custom_end_minute,
-            custom_end_second,
-        )
+        start, finish = generate_time_range(time_range, measurement_session)
 
-        start, finish = generate_time_range(time_range, custom_start, custom_end)
+        if start is None:
+            return (px.scatter(), "No measurement session selected.")
 
         if y_axis_column == "battery_info":
             df, data_limit_applied = BigQuery().get_sensor_data(
@@ -101,6 +80,9 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
                 finish=finish,
             )
 
+            if df.empty:
+                return (px.scatter(), "No data to plot.")
+
             figure = plot_sensors(df, line_descriptions=sensor_types[y_axis_column]["variable"])
 
         else:
@@ -110,6 +92,9 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
                 start=start,
                 finish=finish,
             )
+
+            if df.empty:
+                return (px.scatter(), "No data to plot.")
 
             data_limit_applied = ""
             figure = plot_connection_statistic(df, y_axis_column)
@@ -126,14 +111,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
-        State("start-date", "date"),
-        State("start-hour", "value"),
-        State("start-minute", "value"),
-        State("start-second", "value"),
-        State("end-date", "date"),
-        State("end-hour", "value"),
-        State("end-minute", "value"),
-        State("end-second", "value"),
+        State("measurement-session-select", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
@@ -142,14 +120,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         node_id,
         sensor_name,
         time_range,
-        custom_start_date,
-        custom_start_hour,
-        custom_start_minute,
-        custom_start_second,
-        custom_end_date,
-        custom_end_hour,
-        custom_end_minute,
-        custom_end_second,
+        measurement_session,
         refresh,
     ):
         """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
@@ -159,32 +130,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :param str node_id:
         :param str sensor_name:
         :param str time_range:
-        :param str|None custom_start_date:
-        :param int|None custom_start_hour:
-        :param int|None custom_start_minute:
-        :param int|None custom_start_second:
-        :param str|None custom_end_date:
-        :param int|None custom_end_hour:
-        :param int|None custom_end_minute:
-        :param int|None custom_end_second:
+        :param str measurement_session:
         :param int refresh:
         :return (plotly.graph_objs.Figure, str):
         """
         if not node_id:
             node_id = None
 
-        custom_start, custom_end = _combine_dates_and_times(
-            custom_start_date,
-            custom_start_hour,
-            custom_start_minute,
-            custom_start_second,
-            custom_end_date,
-            custom_end_hour,
-            custom_end_minute,
-            custom_end_second,
-        )
+        start, finish = generate_time_range(time_range, measurement_session)
 
-        start, finish = generate_time_range(time_range, custom_start, custom_end)
+        if start is None:
+            return (px.scatter(), "No measurement session selected.")
 
         df, data_limit_applied = BigQuery().get_sensor_data(
             installation_reference,
@@ -195,7 +151,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         )
 
         if df.empty:
-            return (px.scatter(), "No data to plot")
+            return (px.scatter(), "No data to plot.")
 
         # Extract only data columns and set index to 'datetime', so that DataFrame is accepted by RawSignal class
         data_columns = df.columns[df.columns.str.startswith("f")].tolist()
@@ -359,9 +315,10 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
     @app.callback(
         Output("graph-title", "children"),
-        Input("y-axis-select", "value"),
+        State("y-axis-select", "value"),
+        Input("refresh-button", "n_clicks"),
     )
-    def update_graph_title(selected_y_axis):
+    def update_graph_title(selected_y_axis, refresh):
         """Update the graph title with the name of the currently selected y-axis.
 
         :param str selected_y_axis:
@@ -384,19 +341,117 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
             Output("end-hour", "disabled"),
             Output("end-minute", "disabled"),
             Output("end-second", "disabled"),
+            Output("measurement-session-select", "disabled"),
+            Output("measurement-session-check-button", "disabled"),
         ],
         [
             Input("time-range-select", "value"),
         ],
     )
-    def enable_custom_time_range_select(time_range):
-        """Enable the custom time range selection if "Custom" is chosen in the time range selector.
+    def enable_measurement_session_time_range_select(time_range):
+        """Enable the measurement session time range selection if "Measurement session" is chosen in the time range
+        selector.
 
         :param str time_range:
         :return bool:
         """
-        disabled = time_range != "Custom"
-        return (disabled, None, disabled, disabled, disabled, disabled, None, disabled, disabled, disabled)
+        disabled = time_range != "Measurement session"
+        return (
+            disabled,
+            None,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+            None,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+            disabled,
+        )
+
+    @app.callback(
+        Output("measurement-session-select", "options"),
+        Output("measurement-session-select", "value"),
+        State("measurement-session-select", "disabled"),
+        State("installation-select", "value"),
+        State("node-select", "value"),
+        State("y-axis-select", "value"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
+        Input("measurement-session-check-button", "n_clicks"),
+    )
+    def update_measurement_session_selector(
+        measurement_session_selection_disabled,
+        installation_reference,
+        node_id,
+        y_axis,
+        start_date,
+        start_hour,
+        start_minute,
+        start_second,
+        end_date,
+        end_hour,
+        end_minute,
+        end_second,
+        refresh,
+    ):
+        if measurement_session_selection_disabled:
+            raise PreventUpdate
+
+        start_datetime, finish_datetime = _combine_dates_and_times(
+            start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
+
+        # The connection statistics always come together, so they have the same measurement sessions.
+        if y_axis in {"filtered_rssi", "filtered_rssi", "tx_power", "allocated_heap_memory"}:
+            y_axis = "connection_statistics"
+
+        measurement_sessions = BigQuery().get_measurement_sessions(
+            installation_reference=installation_reference,
+            node_id=node_id,
+            sensor_type_reference=y_axis,
+            start=start_datetime,
+            finish=finish_datetime,
+        )
+
+        measurement_sessions = [
+            f"{session[1][0]} to {session[1][1]}"
+            for session in measurement_sessions[["start_time", "end_time"]].iterrows()
+        ]
+
+        if not measurement_sessions:
+            return [], None
+
+        return measurement_sessions, measurement_sessions[0]
+
+    @app.callback(
+        # Use a dummy output.
+        Output("run-session-extraction-output-placeholder", "children"),
+        Input("run-session-extraction", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def run_session_extraction_in_database(refresh):
+        """Trigger measurement session extraction in the database.
+
+        :return None:
+        """
+        threading.Thread(target=requests.post, args=(SESSIONS_EXTRACTION_CLOUD_FUNCTION_URL,), daemon=True).start()
+        logger.info("Triggered measurement session extraction cloud function.")
 
     @app.callback(
         Output("app", "children"),

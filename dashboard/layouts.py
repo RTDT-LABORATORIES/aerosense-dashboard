@@ -30,9 +30,20 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                     [
                         html.Label(html.B("Installation")),
                         html.Label("Installation reference"),
-                        InstallationSelect(),
+                        dcc.Loading(
+                            [
+                                InstallationSelect(),
+                            ],
+                        ),
                         html.Label("Node ID"),
-                        NodeSelect(),
+                        dcc.Loading(
+                            [
+                                NodeSelect(),
+                            ],
+                        ),
+                        html.Br(),
+                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
+                        html.Br(),
                         html.Br(),
                         html.Label(html.B("Sensor")),
                         SensorSelect(sensor_names),
@@ -40,7 +51,7 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                         html.Label(html.B("Time range")),
                         TimeRangeSelect(),
                         html.Br(),
-                        html.Label(html.B("Custom time range")),
+                        html.Label(html.B("Measurement sessions")),
                         html.Div(
                             [
                                 html.Div(
@@ -128,9 +139,23 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                             style={"margin": "10px 0"},
                         ),
+                        html.Button("Get measurement sessions", id="measurement-session-check-button", n_clicks=0),
+                        html.Br(),
+                        html.Br(),
+                        html.Label("Measurement session"),
+                        dcc.Loading(
+                            [
+                                dcc.Dropdown(id="measurement-session-select", persistence=True),
+                            ]
+                        ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
+                        html.Button(
+                            "Run session extraction in database",
+                            id="run-session-extraction",
+                            n_clicks=0,
+                        ),
+                        html.Br(id="run-session-extraction-output-placeholder"),
                     ],
                     id="buttons-section",
                     className="sidebar-content",
@@ -174,11 +199,27 @@ def create_cp_plot_tab_layout(app):
                     [
                         html.Label(html.B("Installation")),
                         html.Label("Installation reference"),
-                        InstallationSelect(),
+                        dcc.Loading(
+                            [
+                                InstallationSelect(),
+                            ],
+                        ),
                         html.Label("Node ID"),
-                        NodeSelect(),
+                        dcc.Loading(
+                            [
+                                NodeSelect(),
+                            ],
+                        ),
+                        html.Br(),
+                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
+                        html.Br(),
+                        html.Br(),
                         html.Label("Sensor coordinates reference"),
-                        SensorCoordinatesSelect(),
+                        dcc.Loading(
+                            [
+                                SensorCoordinatesSelect(),
+                            ]
+                        ),
                         html.Div(
                             [
                                 html.Div(
@@ -308,7 +349,6 @@ def create_cp_plot_tab_layout(app):
                         ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button("Check for new installations", id="installation-check-button", n_clicks=0),
                         html.Button(
                             "Check for new sensor coordinates",
                             id="sensor-coordinates-check-button",
