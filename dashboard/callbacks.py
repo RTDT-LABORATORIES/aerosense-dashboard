@@ -431,7 +431,7 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
 
         measurement_sessions = [
             f"{session[1][0]} to {session[1][1]}"
-            for session in measurement_sessions[["start_time", "end_time"]].iterrows()
+            for session in measurement_sessions[["start_datetime", "finish_datetime"]].iterrows()
         ]
 
         if not measurement_sessions:
