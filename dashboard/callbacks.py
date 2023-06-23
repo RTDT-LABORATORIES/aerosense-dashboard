@@ -277,31 +277,6 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         return BigQuery().get_installations()
 
     @app.callback(
-        [
-            Output("node-select", "options"),
-            Output("node-select", "value"),
-        ],
-        [
-            Input("installation-select", "value"),
-        ],
-    )
-    @cache.memoize(timeout=cache_timeout)
-    def update_node_selector(installation_reference):
-        """Update the node selector options with the IDs of the nodes available for the given installation.
-
-        :param str installation_reference:
-        :return list(str):
-        """
-        nodes = BigQuery().get_nodes(installation_reference)
-
-        try:
-            first_option = nodes[0]
-        except IndexError:
-            first_option = None
-
-        return nodes, first_option
-
-    @app.callback(
         Output("sensor-coordinates-select", "options"),
         Input("sensor-coordinates-check-button", "n_clicks"),
     )
