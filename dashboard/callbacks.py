@@ -279,6 +279,16 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         return " ".join(selected_y_axis.split("_")).capitalize()
 
     @app.callback(
+        Output("custom-time-range-selector", "style"),
+        Input("time-range-select", "value"),
+    )
+    def toggle_custom_time_range_selector_visibility(selected_value):
+        if selected_value == "Custom":
+            return {"display": "initial"}
+        else:
+            return {"display": "none"}
+
+    @app.callback(
         Output("app", "children"),
         Input("nav-tabs", "value"),
     )

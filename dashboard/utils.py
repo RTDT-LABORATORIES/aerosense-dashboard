@@ -29,7 +29,8 @@ def generate_time_range(time_range, measurement_session=None):
     if time_range == "All time":
         return datetime.datetime.min, datetime.datetime.utcnow()
 
-    if time_range == "Measurement session":
+    if time_range == "Custom":
+        return None, None
         try:
             start, finish = measurement_session.split(" to ")
             start = datetime.datetime.fromisoformat(start)

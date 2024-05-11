@@ -31,16 +31,13 @@ def create_sensors_tab_layout(
                 html.Div(
                     [
                         html.Label(html.B("Installation")),
-                        html.Label(
-                            "Installation reference", style={"margin-top": "10px"}
-                        ),
                         dcc.Loading(
                             [
                                 InstallationSelect(),
                             ],
                         ),
                         html.Br(),
-                        html.Label("Node ID"),
+                        html.Label(html.B("Node ID")),
                         dcc.Loading(
                             [
                                 NodeSelect(),
@@ -56,127 +53,132 @@ def create_sensors_tab_layout(
                             [
                                 html.Div(
                                     [
-                                        html.Label("Start datetime"),
-                                        dcc.DatePickerSingle(
-                                            id="start-date",
-                                            date=datetime.datetime.now()
-                                            .date()
-                                            .isoformat(),
-                                            display_format="Do MMM Y",
-                                            disabled=True,
-                                            persistence=True,
+                                        html.Div(
+                                            [
+                                                html.Label("Start datetime"),
+                                                dcc.DatePickerSingle(
+                                                    id="start-date",
+                                                    date=datetime.datetime.now()
+                                                    .date()
+                                                    .isoformat(),
+                                                    display_format="Do MMM Y",
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Hour"),
+                                                dash_daq.NumericInput(
+                                                    id="start-hour",
+                                                    value=0,
+                                                    min=0,
+                                                    max=23,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Minute"),
+                                                dash_daq.NumericInput(
+                                                    id="start-minute",
+                                                    value=0,
+                                                    min=0,
+                                                    max=59,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Second"),
+                                                dash_daq.NumericInput(
+                                                    id="start-second",
+                                                    value=0,
+                                                    min=0,
+                                                    max=59,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
                                         ),
                                     ],
-                                    style={"display": "inline-block"},
+                                    style={"margin": "10px 0"},
                                 ),
                                 html.Div(
                                     [
-                                        html.Label("Hour"),
-                                        dash_daq.NumericInput(
-                                            id="start-hour",
-                                            value=0,
-                                            min=0,
-                                            max=23,
-                                            disabled=True,
-                                            persistence=True,
+                                        html.Div(
+                                            [
+                                                html.Label("End datetime"),
+                                                dcc.DatePickerSingle(
+                                                    id="end-date",
+                                                    display_format="Do MMM Y",
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Hour"),
+                                                dash_daq.NumericInput(
+                                                    id="end-hour",
+                                                    value=0,
+                                                    min=0,
+                                                    max=23,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Minute"),
+                                                dash_daq.NumericInput(
+                                                    id="end-minute",
+                                                    value=0,
+                                                    min=0,
+                                                    max=59,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
+                                        ),
+                                        html.Div(
+                                            [
+                                                html.Label("Second"),
+                                                dash_daq.NumericInput(
+                                                    id="end-second",
+                                                    value=0,
+                                                    min=0,
+                                                    max=59,
+                                                    disabled=True,
+                                                    persistence=True,
+                                                ),
+                                            ],
+                                            style={"display": "inline-block"},
                                         ),
                                     ],
-                                    style={"display": "inline-block"},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Label("Minute"),
-                                        dash_daq.NumericInput(
-                                            id="start-minute",
-                                            value=0,
-                                            min=0,
-                                            max=59,
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Label("Second"),
-                                        dash_daq.NumericInput(
-                                            id="start-second",
-                                            value=0,
-                                            min=0,
-                                            max=59,
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
                                 ),
                             ],
-                            style={"margin": "10px 0"},
+                            id="custom-time-range-selector",
+                            style={"display": "none"},
                         ),
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.Label("End datetime"),
-                                        dcc.DatePickerSingle(
-                                            id="end-date",
-                                            display_format="Do MMM Y",
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Label("Hour"),
-                                        dash_daq.NumericInput(
-                                            id="end-hour",
-                                            value=0,
-                                            min=0,
-                                            max=23,
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Label("Minute"),
-                                        dash_daq.NumericInput(
-                                            id="end-minute",
-                                            value=0,
-                                            min=0,
-                                            max=59,
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Label("Second"),
-                                        dash_daq.NumericInput(
-                                            id="end-second",
-                                            value=0,
-                                            min=0,
-                                            max=59,
-                                            disabled=True,
-                                            persistence=True,
-                                        ),
-                                    ],
-                                    style={"display": "inline-block"},
-                                ),
-                            ],
-                            style={"margin": "10px 0"},
-                        ),
+                        html.Br(),
+                        html.Br(),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Br(),
-                        html.Br(),
                         html.Br(),
                         html.Br(),
                         html.Br(),
