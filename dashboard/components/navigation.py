@@ -9,9 +9,9 @@ def Navigation(selected_tab="information_sensors"):
             children=[
                 dcc.Tab(label="Information sensors", value="information_sensors"),
                 dcc.Tab(label="Sensors", value="sensors"),
-                dcc.Tab(label="Cp plot", value="cp_plot"),
             ],
             persistence=True,
         ),
         className="sidebar-content",
+        style={"margin-top": "35px"},
     )

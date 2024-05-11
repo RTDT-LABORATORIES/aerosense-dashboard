@@ -10,7 +10,9 @@ from dashboard.components.sensor_select import SensorSelect
 from dashboard.components.time_range_select import TimeRangeSelect
 
 
-def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_warning_id):
+def create_sensors_tab_layout(
+    app, tab_name, sensor_names, graph_id, data_limit_warning_id
+):
     """Create the layout corresponding to a sensors tab.
 
     :param dash.Dash app:
@@ -29,12 +31,15 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                 html.Div(
                     [
                         html.Label(html.B("Installation")),
-                        html.Label("Installation reference"),
+                        html.Label(
+                            "Installation reference", style={"margin-top": "10px"}
+                        ),
                         dcc.Loading(
                             [
                                 InstallationSelect(),
                             ],
                         ),
+                        html.Br(),
                         html.Label("Node ID"),
                         dcc.Loading(
                             [
@@ -42,16 +47,11 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                         ),
                         html.Br(),
-                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
-                        html.Br(),
-                        html.Br(),
                         html.Label(html.B("Sensor")),
                         SensorSelect(sensor_names),
                         html.Br(),
                         html.Label(html.B("Time range")),
                         TimeRangeSelect(),
-                        html.Br(),
-                        html.Label(html.B("Measurement sessions")),
                         html.Div(
                             [
                                 html.Div(
@@ -59,10 +59,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                         html.Label("Start datetime"),
                                         dcc.DatePickerSingle(
                                             id="start-date",
-                                            date=datetime.datetime.now().date().isoformat(),
+                                            date=datetime.datetime.now()
+                                            .date()
+                                            .isoformat(),
                                             display_format="Do MMM Y",
-                                            persistence=True,
                                             disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -71,7 +73,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                     [
                                         html.Label("Hour"),
                                         dash_daq.NumericInput(
-                                            id="start-hour", value=0, min=0, max=23, persistence=True
+                                            id="start-hour",
+                                            value=0,
+                                            min=0,
+                                            max=23,
+                                            disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -80,7 +87,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                     [
                                         html.Label("Minute"),
                                         dash_daq.NumericInput(
-                                            id="start-minute", value=0, min=0, max=59, persistence=True
+                                            id="start-minute",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -89,7 +101,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                     [
                                         html.Label("Second"),
                                         dash_daq.NumericInput(
-                                            id="start-second", value=0, min=0, max=59, persistence=True
+                                            id="start-second",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -105,8 +122,8 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                         dcc.DatePickerSingle(
                                             id="end-date",
                                             display_format="Do MMM Y",
-                                            persistence=True,
                                             disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -114,7 +131,14 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                 html.Div(
                                     [
                                         html.Label("Hour"),
-                                        dash_daq.NumericInput(id="end-hour", value=0, min=0, max=23, persistence=True),
+                                        dash_daq.NumericInput(
+                                            id="end-hour",
+                                            value=0,
+                                            min=0,
+                                            max=23,
+                                            disabled=True,
+                                            persistence=True,
+                                        ),
                                     ],
                                     style={"display": "inline-block"},
                                 ),
@@ -122,7 +146,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                     [
                                         html.Label("Minute"),
                                         dash_daq.NumericInput(
-                                            id="end-minute", value=0, min=0, max=59, persistence=True
+                                            id="end-minute",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -131,7 +160,12 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                                     [
                                         html.Label("Second"),
                                         dash_daq.NumericInput(
-                                            id="end-second", value=0, min=0, max=59, persistence=True
+                                            id="end-second",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            disabled=True,
+                                            persistence=True,
                                         ),
                                     ],
                                     style={"display": "inline-block"},
@@ -139,23 +173,13 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                             ],
                             style={"margin": "10px 0"},
                         ),
-                        html.Button("Get measurement sessions", id="measurement-session-check-button", n_clicks=0),
-                        html.Br(),
-                        html.Br(),
-                        html.Label("Measurement session"),
-                        dcc.Loading(
-                            [
-                                dcc.Dropdown(id="measurement-session-select", persistence=True),
-                            ]
-                        ),
                         html.Br(),
                         html.Button("Plot", id="refresh-button", n_clicks=0),
-                        html.Button(
-                            "Run session extraction in database",
-                            id="run-session-extraction",
-                            n_clicks=0,
-                        ),
-                        html.Br(id="run-session-extraction-output-placeholder"),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
                     ],
                     id="buttons-section",
                     className="sidebar-content",
@@ -174,7 +198,9 @@ def create_sensors_tab_layout(app, tab_name, sensor_names, graph_id, data_limit_
                 ),
                 dcc.Loading(
                     [
-                        dcc.Graph(id=graph_id, style={"margin": "0px 20px", "height": "45vh"}),
+                        dcc.Graph(
+                            id=graph_id, style={"margin": "0px 20px", "height": "45vh"}
+                        ),
                     ],
                 ),
             ],
@@ -210,9 +236,6 @@ def create_cp_plot_tab_layout(app):
                                 NodeSelect(),
                             ],
                         ),
-                        html.Br(),
-                        html.Button("Get new installations", id="installation-check-button", n_clicks=0),
-                        html.Br(),
                         html.Br(),
                         html.Label("Sensor coordinates reference"),
                         dcc.Loading(
@@ -304,7 +327,9 @@ def create_cp_plot_tab_layout(app):
                                         html.Label("Date"),
                                         dcc.DatePickerSingle(
                                             id="date-select",
-                                            date=datetime.datetime.now().date().isoformat(),
+                                            date=datetime.datetime.now()
+                                            .date()
+                                            .isoformat(),
                                             display_format="Do MMM Y",
                                             persistence=True,
                                         ),
@@ -314,21 +339,39 @@ def create_cp_plot_tab_layout(app):
                                 html.Div(
                                     [
                                         html.Label("Hour"),
-                                        dash_daq.NumericInput(id="hour", value=0, min=0, max=23, persistence=True),
+                                        dash_daq.NumericInput(
+                                            id="hour",
+                                            value=0,
+                                            min=0,
+                                            max=23,
+                                            persistence=True,
+                                        ),
                                     ],
                                     style={"display": "inline-block"},
                                 ),
                                 html.Div(
                                     [
                                         html.Label("Minute"),
-                                        dash_daq.NumericInput(id="minute", value=0, min=0, max=59, persistence=True),
+                                        dash_daq.NumericInput(
+                                            id="minute",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            persistence=True,
+                                        ),
                                     ],
                                     style={"display": "inline-block"},
                                 ),
                                 html.Div(
                                     [
                                         html.Label("Second"),
-                                        dash_daq.NumericInput(id="second", value=0, min=0, max=59, persistence=True),
+                                        dash_daq.NumericInput(
+                                            id="second",
+                                            value=0,
+                                            min=0,
+                                            max=59,
+                                            persistence=True,
+                                        ),
                                     ],
                                     style={"display": "inline-block"},
                                 ),
@@ -361,20 +404,23 @@ def create_cp_plot_tab_layout(app):
             ],
             className="four columns sidebar",
         ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H3("Cp plot", id="graph-title"),
-                    ],
-                    className="text-box",
-                ),
-                dcc.Loading(
-                    [
-                        dcc.Graph(id="pressure-profile-graph", style={"margin": "0px 20px", "height": "45vh"}),
-                    ],
-                ),
-            ],
-            className="eight columns",
-        ),
+        # html.Div(
+        #     [
+        #         html.Div(
+        #             [
+        #                 html.H3("Cp plot", id="graph-title"),
+        #             ],
+        #             className="text-box",
+        #         ),
+        #         dcc.Loading(
+        #             [
+        #                 dcc.Graph(
+        #                     id="pressure-profile-graph",
+        #                     style={"margin": "0px 20px", "height": "45vh"},
+        #                 ),
+        #             ],
+        #         ),
+        #     ],
+        #     className="eight columns",
+        # ),
     ]
