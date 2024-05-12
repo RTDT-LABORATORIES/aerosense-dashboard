@@ -17,11 +17,6 @@ from dashboard.utils import generate_time_range
 logger = logging.getLogger(__name__)
 
 
-SESSIONS_EXTRACTION_CLOUD_FUNCTION_URL = (
-    "https://europe-west6-aerosense-twined.cloudfunctions.net/data-gateway-sessions"
-)
-
-
 def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
     """Register the dashboards callbacks with the app.
 
@@ -40,11 +35,31 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
     def plot_information_sensors_graph(
-        installation_reference, node_id, y_axis_column, time_range, refresh
+        installation_reference,
+        node_id,
+        y_axis_column,
+        time_range,
+        start_date,
+        start_hour,
+        start_minute,
+        start_second,
+        end_date,
+        end_hour,
+        end_minute,
+        end_second,
+        refresh,
     ):
         """Plot a graph of the information sensors for the given installation, y-axis column, and time range when these
         values are changed or the refresh button is clicked.
@@ -59,7 +74,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range)
+        start, finish = generate_time_range(
+            time_range,
+            start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
 
         if start is None:
             return (px.scatter(), "No measurement session selected.")
@@ -109,11 +134,31 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         State("node-select", "value"),
         State("y-axis-select", "value"),
         State("time-range-select", "value"),
+        State("start-date", "date"),
+        State("start-hour", "value"),
+        State("start-minute", "value"),
+        State("start-second", "value"),
+        State("end-date", "date"),
+        State("end-hour", "value"),
+        State("end-minute", "value"),
+        State("end-second", "value"),
         Input("refresh-button", "n_clicks"),
     )
     @cache.memoize(timeout=cache_timeout, args_to_ignore=["refresh"])
     def plot_sensors_graph(
-        installation_reference, node_id, sensor_name, time_range, refresh
+        installation_reference,
+        node_id,
+        sensor_name,
+        time_range,
+        start_date,
+        start_hour,
+        start_minute,
+        start_second,
+        end_date,
+        end_hour,
+        end_minute,
+        end_second,
+        refresh,
     ):
         """Plot a graph of the sensor data for the given installation, y-axis column, and time range when these values are
         changed or the refresh button is clicked.
@@ -128,7 +173,17 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         if not node_id:
             node_id = None
 
-        start, finish = generate_time_range(time_range)
+        start, finish = generate_time_range(
+            time_range,
+            start_date,
+            start_hour,
+            start_minute,
+            start_second,
+            end_date,
+            end_hour,
+            end_minute,
+            end_second,
+        )
 
         if start is None:
             return (px.scatter(), "No measurement session selected.")
@@ -299,54 +354,3 @@ def register_callbacks(app, cache, cache_timeout, tabs, sensor_types):
         :return list:
         """
         return tabs[section_name]
-
-
-def _combine_dates_and_times(
-    start_date,
-    start_hour,
-    start_minute,
-    start_second,
-    end_date,
-    end_hour,
-    end_minute,
-    end_second,
-):
-    """If all inputs are given, combine the start inputs into a start datetime and the end inputs into an end datetime;
-    otherwise, return `None` as the start and end datetimes.
-
-    :param str|None start_date:
-    :param int|None start_hour:
-    :param int|None start_minute:
-    :param int|None start_second:
-    :param str|None end_date:
-    :param int|None end_hour:
-    :param int|None end_minute:
-    :param int|None end_second:
-    :return (datetime.datetime, datetime.datetime)|(None, None):
-    """
-    if all(
-        argument is not None
-        for argument in (
-            start_date,
-            start_hour,
-            start_minute,
-            start_second,
-            end_date,
-            end_hour,
-            end_minute,
-            end_second,
-        )
-    ):
-        start = datetime.datetime.combine(
-            dt.date.fromisoformat(start_date),
-            datetime.time(hour=start_hour, minute=start_minute, second=start_second),
-        )
-
-        end = datetime.datetime.combine(
-            dt.date.fromisoformat(end_date),
-            datetime.time(hour=end_hour, minute=end_minute, second=end_second),
-        )
-
-        return (start, end)
-
-    return (None, None)
